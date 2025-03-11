@@ -1,32 +1,20 @@
 // src/App.tsx
 import React from 'react'
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from 'react-router-dom'
-import UserRoutes from './routes/UserRoutes'
-import Layout from './components/layout/Layout'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { AuthProvider } from './contexts/AuthContext'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './App.css'
+import AppRoutes from './routes'
 
 const App: React.FC = () => {
   return (
-    <Router>
-      <Routes>
-        <Route
-          path='/users/*'
-          element={
-            <Layout>
-              <UserRoutes />
-            </Layout>
-          }
-        />
-        <Route path='/users/*' element={<UserRoutes />} />
-        <Route path='/' element={<Navigate to='/users' replace />} />
-      </Routes>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path='/*' element={<AppRoutes />} />
+        </Routes>
+      </Router>
+    </AuthProvider>
   )
 }
 

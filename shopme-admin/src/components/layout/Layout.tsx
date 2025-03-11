@@ -1,6 +1,20 @@
 import React from 'react'
-import { Layout as AntLayout, Space, Avatar, Typography, Dropdown } from 'antd'
-import { LogoutOutlined, UserOutlined } from '@ant-design/icons'
+import {
+  Layout as AntLayout,
+  Menu,
+  Button,
+  Space,
+  Avatar,
+  Typography,
+  Dropdown,
+} from 'antd'
+import {
+  LogoutOutlined,
+  UserOutlined,
+  SettingOutlined,
+} from '@ant-design/icons'
+import { useAuth } from '../../contexts/AuthContext'
+import { useNavigate } from 'react-router-dom'
 import type { MenuProps } from 'antd'
 
 const { Header, Content } = AntLayout
@@ -11,6 +25,9 @@ interface LayoutProps {
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
+  const { logout, userInfo } = useAuth()
+  const navigate = useNavigate()
+
   const userMenuItems: MenuProps['items'] = [
     {
       key: 'profile',
@@ -21,6 +38,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       key: 'logout',
       icon: <LogoutOutlined />,
       label: 'Logout',
+      onClick: logout,
     },
   ]
 
@@ -36,7 +54,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       >
         <div style={{ color: 'white', fontSize: '20px' }}>Admin Dashboard</div>
         <Space>
-          <Text style={{ color: 'white' }}>User</Text>
+          <Text style={{ color: 'white' }}>
+            {userInfo?.firstName} {userInfo?.lastName}
+          </Text>
           <Dropdown menu={{ items: userMenuItems }} placement='bottomRight'>
             <Avatar
               style={{ cursor: 'pointer', backgroundColor: '#1890ff' }}

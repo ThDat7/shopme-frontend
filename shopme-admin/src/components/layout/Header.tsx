@@ -1,12 +1,26 @@
 import React from 'react'
 import { Navbar, Nav, NavDropdown, Image, Button } from 'react-bootstrap'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBars } from '@fortawesome/free-solid-svg-icons'
 
-interface HeaderProps {}
+interface HeaderProps {
+  userFullName?: string
+  userRoles?: string[]
+  onLogout: () => void
+}
 
-const Header: React.FC<HeaderProps> = () => {
+const Header: React.FC<HeaderProps> = ({
+  userFullName,
+  userRoles,
+  onLogout,
+}) => {
+  const navigate = useNavigate()
+  const isAdmin = userRoles?.includes('Admin')
+  const isEditor = userRoles?.includes('Editor')
+  const isShipper = userRoles?.includes('Shipper')
+  const isSalesperson = userRoles?.includes('Salesperson')
+
   return (
     <Navbar bg='dark' variant='dark' expand='lg'>
       <Link to='/' className='navbar-brand'>
@@ -17,7 +31,7 @@ const Header: React.FC<HeaderProps> = () => {
       </Navbar.Toggle>
       <Navbar.Collapse id='topNavbar'>
         <Nav className='mr-auto'>
-          {
+          {isAdmin && (
             <NavDropdown title='Users' id='users-dropdown'>
               <Link to='/users/new' className='dropdown-item'>
                 Create New
@@ -26,9 +40,9 @@ const Header: React.FC<HeaderProps> = () => {
                 View All
               </Link>
             </NavDropdown>
-          }
+          )}
 
-          {
+          {(isAdmin || isEditor) && (
             <>
               <NavDropdown title='Categories' id='categories-dropdown'>
                 <Link to='/categories/new' className='dropdown-item'>
@@ -57,9 +71,9 @@ const Header: React.FC<HeaderProps> = () => {
                 </Link>
               </NavDropdown>
             </>
-          }
+          )}
 
-          {
+          {(isAdmin || isSalesperson) && (
             <NavDropdown title='Customers' id='customers-dropdown'>
               <Link to='/customers/new' className='dropdown-item'>
                 Create New
@@ -68,17 +82,17 @@ const Header: React.FC<HeaderProps> = () => {
                 View All
               </Link>
             </NavDropdown>
-          }
+          )}
 
-          {
+          {(isAdmin || isSalesperson || isShipper) && (
             <NavDropdown title='Orders' id='orders-dropdown'>
               <Link to='/orders' className='dropdown-item'>
                 View All
               </Link>
             </NavDropdown>
-          }
+          )}
 
-          {
+          {(isAdmin || isSalesperson) && (
             <NavDropdown title='Sales Report' id='sales-dropdown'>
               <Link to='/reports/sales-by-date' className='dropdown-item'>
                 Sales By Date
@@ -90,17 +104,17 @@ const Header: React.FC<HeaderProps> = () => {
                 Sales By Product
               </Link>
             </NavDropdown>
-          }
+          )}
 
-          {
+          {(isAdmin || isEditor) && (
             <NavDropdown title='Reviews' id='reviews-dropdown'>
               <Link to='/reviews' className='dropdown-item'>
                 View All
               </Link>
             </NavDropdown>
-          }
+          )}
 
-          {
+          {isAdmin && (
             <NavDropdown title='Shipping Rates' id='shipping-rates-dropdown'>
               <Link to='/shipping_rates/new' className='dropdown-item'>
                 Create New
@@ -109,9 +123,9 @@ const Header: React.FC<HeaderProps> = () => {
                 View All
               </Link>
             </NavDropdown>
-          }
+          )}
 
-          {
+          {isAdmin && (
             <>
               <NavDropdown title='Settings' id='settings-dropdown'>
                 <Link to='/settings/general' className='dropdown-item'>
@@ -134,15 +148,19 @@ const Header: React.FC<HeaderProps> = () => {
                 </Link>
               </NavDropdown>
             </>
-          }
+          )}
         </Nav>
         <Nav>
-          <NavDropdown title={'Account'} id='account-dropdown' align='end'>
+          <NavDropdown
+            title={userFullName || 'Account'}
+            id='account-dropdown'
+            align='end'
+          >
             <Link to='/account' className='dropdown-item'>
               Your Account
             </Link>
             <NavDropdown.Divider />
-            <Button variant='link' className='dropdown-item'>
+            <Button variant='link' className='dropdown-item' onClick={onLogout}>
               Logout
             </Button>
           </NavDropdown>
