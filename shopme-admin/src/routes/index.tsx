@@ -4,6 +4,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import LoginPage from '../pages/auth/LoginPage'
 import { ProtectedRoute } from './ProtectedRoute'
 import UserRoutes from './UserRoutes'
+import ProfilePage from '../pages/profile/ProfilePage'
 import Layout from '../components/layout/Layout'
 
 const AppRoutes: React.FC = () => {
@@ -16,6 +17,16 @@ const AppRoutes: React.FC = () => {
           <ProtectedRoute>
             <Layout>
               <UserRoutes />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path='/profile'
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <ProfilePage />
             </Layout>
           </ProtectedRoute>
         }

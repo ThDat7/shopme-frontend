@@ -21,3 +21,12 @@ export interface IntrospectRequest {
 export interface IntrospectResponse {
   valid: boolean
 }
+
+export interface UserProfile {
+  id: number
+  email: string
+  firstName: string
+  lastName: string
+  photos: string
+  roles: string[]
+}

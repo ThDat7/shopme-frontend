@@ -33,6 +33,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       key: 'profile',
       icon: <UserOutlined />,
       label: 'My Profile',
+      onClick: () => navigate('/profile'),
     },
     {
       key: 'logout',

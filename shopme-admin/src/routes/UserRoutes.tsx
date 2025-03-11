@@ -12,7 +12,7 @@ const UserRoutes: React.FC = () => {
       <Route
         path='/'
         element={
-          <ProtectedRoute isAuthenticated={true}>
+          <ProtectedRoute>
             <UserList />
           </ProtectedRoute>
         }
@@ -20,7 +20,7 @@ const UserRoutes: React.FC = () => {
       <Route
         path='/create'
         element={
-          <ProtectedRoute isAuthenticated={true}>
+          <ProtectedRoute>
             <CreateUser />
           </ProtectedRoute>
         }
@@ -28,7 +28,7 @@ const UserRoutes: React.FC = () => {
       <Route
         path='/edit/:id'
         element={
-          <ProtectedRoute isAuthenticated={true}>
+          <ProtectedRoute>
             <EditUser />
           </ProtectedRoute>
         }
