@@ -1,172 +1,121 @@
 import React from 'react'
-import { Navbar, Nav, NavDropdown, Image, Button } from 'react-bootstrap'
-import { Link, useNavigate } from 'react-router-dom'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBars } from '@fortawesome/free-solid-svg-icons'
+import '@ant-design/v5-patch-for-react-19'
+import {
+  Layout,
+  Menu,
+  Space,
+  Avatar,
+  Dropdown,
+  Typography,
+  MenuProps,
+} from 'antd'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import {
+  UserOutlined,
+  AppstoreOutlined,
+  DashboardOutlined,
+  ShoppingOutlined,
+  SettingOutlined,
+  LogoutOutlined,
+} from '@ant-design/icons'
+import { useAuth } from '../../contexts/AuthContext'
 
-interface HeaderProps {
-  userFullName?: string
-  userRoles?: string[]
-  onLogout: () => void
-}
+const { Header: AntHeader } = Layout
+const { Text } = Typography
 
-const Header: React.FC<HeaderProps> = ({
-  userFullName,
-  userRoles,
-  onLogout,
-}) => {
+const Header: React.FC = () => {
+  const location = useLocation()
+  const currentPath = location.pathname
+
+  const { logout, userInfo } = useAuth()
   const navigate = useNavigate()
-  const isAdmin = userRoles?.includes('Admin')
-  const isEditor = userRoles?.includes('Editor')
-  const isShipper = userRoles?.includes('Shipper')
-  const isSalesperson = userRoles?.includes('Salesperson')
+
+  const userMenuItems: MenuProps['items'] = [
+    {
+      key: 'profile',
+      icon: <UserOutlined />,
+      label: 'My Profile',
+      onClick: () => navigate('/profile'),
+    },
+    {
+      key: 'logout',
+      icon: <LogoutOutlined />,
+      label: 'Logout',
+      onClick: logout,
+    },
+  ]
+
+  const mainMenuItems: MenuProps['items'] = [
+    {
+      key: 'dashboard',
+      icon: <DashboardOutlined />,
+      label: <Link to='/'>Dashboard</Link>,
+    },
+    {
+      key: 'users',
+      icon: <UserOutlined />,
+      label: <Link to='/users'>Users</Link>,
+    },
+    {
+      key: 'categories',
+      icon: <AppstoreOutlined />,
+      label: <Link to='/categories'>Categories</Link>,
+    },
+    {
+      key: 'products',
+      icon: <ShoppingOutlined />,
+      label: <Link to='/products'>Products</Link>,
+    },
+    {
+      key: 'settings',
+      icon: <SettingOutlined />,
+      label: <Link to='/settings'>Settings</Link>,
+    },
+  ]
+
+  const getSelectedKey = () => {
+    if (currentPath.includes('/users')) return 'users'
+    if (currentPath.includes('/categories')) return 'categories'
+    if (currentPath.includes('/products')) return 'products'
+    if (currentPath.includes('/settings')) return 'settings'
+    return 'dashboard'
+  }
 
   return (
-    <Navbar bg='dark' variant='dark' expand='lg'>
-      <Link to='/' className='navbar-brand'>
-        <Image src='/images/ShopmeAdminSmall.png' alt='Shopme Admin' />
-      </Link>
-      <Navbar.Toggle aria-controls='topNavbar'>
-        <FontAwesomeIcon icon={faBars} />
-      </Navbar.Toggle>
-      <Navbar.Collapse id='topNavbar'>
-        <Nav className='mr-auto'>
-          {isAdmin && (
-            <NavDropdown title='Users' id='users-dropdown'>
-              <Link to='/users/new' className='dropdown-item'>
-                Create New
-              </Link>
-              <Link to='/users' className='dropdown-item'>
-                View All
-              </Link>
-            </NavDropdown>
-          )}
-
-          {(isAdmin || isEditor) && (
-            <>
-              <NavDropdown title='Categories' id='categories-dropdown'>
-                <Link to='/categories/new' className='dropdown-item'>
-                  Create New
-                </Link>
-                <Link to='/categories' className='dropdown-item'>
-                  View All
-                </Link>
-              </NavDropdown>
-
-              <NavDropdown title='Brands' id='brands-dropdown'>
-                <Link to='/brands/new' className='dropdown-item'>
-                  Create New
-                </Link>
-                <Link to='/brands' className='dropdown-item'>
-                  View All
-                </Link>
-              </NavDropdown>
-
-              <NavDropdown title='Products' id='products-dropdown'>
-                <Link to='/products/new' className='dropdown-item'>
-                  Create New
-                </Link>
-                <Link to='/products' className='dropdown-item'>
-                  View All
-                </Link>
-              </NavDropdown>
-            </>
-          )}
-
-          {(isAdmin || isSalesperson) && (
-            <NavDropdown title='Customers' id='customers-dropdown'>
-              <Link to='/customers/new' className='dropdown-item'>
-                Create New
-              </Link>
-              <Link to='/customers' className='dropdown-item'>
-                View All
-              </Link>
-            </NavDropdown>
-          )}
-
-          {(isAdmin || isSalesperson || isShipper) && (
-            <NavDropdown title='Orders' id='orders-dropdown'>
-              <Link to='/orders' className='dropdown-item'>
-                View All
-              </Link>
-            </NavDropdown>
-          )}
-
-          {(isAdmin || isSalesperson) && (
-            <NavDropdown title='Sales Report' id='sales-dropdown'>
-              <Link to='/reports/sales-by-date' className='dropdown-item'>
-                Sales By Date
-              </Link>
-              <Link to='/reports/sales-by-category' className='dropdown-item'>
-                Sales By Category
-              </Link>
-              <Link to='/reports/sales-by-product' className='dropdown-item'>
-                Sales By Product
-              </Link>
-            </NavDropdown>
-          )}
-
-          {(isAdmin || isEditor) && (
-            <NavDropdown title='Reviews' id='reviews-dropdown'>
-              <Link to='/reviews' className='dropdown-item'>
-                View All
-              </Link>
-            </NavDropdown>
-          )}
-
-          {isAdmin && (
-            <NavDropdown title='Shipping Rates' id='shipping-rates-dropdown'>
-              <Link to='/shipping_rates/new' className='dropdown-item'>
-                Create New
-              </Link>
-              <Link to='/shipping_rates' className='dropdown-item'>
-                View All
-              </Link>
-            </NavDropdown>
-          )}
-
-          {isAdmin && (
-            <>
-              <NavDropdown title='Settings' id='settings-dropdown'>
-                <Link to='/settings/general' className='dropdown-item'>
-                  General
-                </Link>
-                <Link to='/settings/countries' className='dropdown-item'>
-                  Countries
-                </Link>
-                <Link to='/settings/states' className='dropdown-item'>
-                  States
-                </Link>
-                <Link to='/settings/mail-server' className='dropdown-item'>
-                  Mail Server
-                </Link>
-                <Link to='/settings/mail-templates' className='dropdown-item'>
-                  Mail Templates
-                </Link>
-                <Link to='/settings/payment' className='dropdown-item'>
-                  Payment
-                </Link>
-              </NavDropdown>
-            </>
-          )}
-        </Nav>
-        <Nav>
-          <NavDropdown
-            title={userFullName || 'Account'}
-            id='account-dropdown'
-            align='end'
-          >
-            <Link to='/account' className='dropdown-item'>
-              Your Account
-            </Link>
-            <NavDropdown.Divider />
-            <Button variant='link' className='dropdown-item' onClick={onLogout}>
-              Logout
-            </Button>
-          </NavDropdown>
-        </Nav>
-      </Navbar.Collapse>
-    </Navbar>
+    <AntHeader className='header' style={{ padding: 0 }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          height: '100%',
+        }}
+      >
+        <Menu
+          theme='dark'
+          mode='horizontal'
+          selectedKeys={[getSelectedKey()]}
+          items={mainMenuItems}
+          style={{
+            lineHeight: '64px',
+            flex: 1,
+          }}
+        />
+        <div style={{ paddingRight: '24px' }}>
+          <Space>
+            <Text style={{ color: 'white' }}>
+              {userInfo?.firstName} {userInfo?.lastName}
+            </Text>
+            <Dropdown menu={{ items: userMenuItems }} placement='bottomRight'>
+              <Avatar
+                style={{ cursor: 'pointer', backgroundColor: '#1890ff' }}
+                icon={<UserOutlined />}
+              />
+            </Dropdown>
+          </Space>
+        </div>
+      </div>
+    </AntHeader>
   )
 }
 
