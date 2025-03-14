@@ -1,9 +1,9 @@
 // src/routes/UserRoutes.tsx
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
-import UserList from '../components/user/UserList'
-import CreateUser from '../components/user/CreateUser'
-import EditUser from '../components/user/EditUser'
+import UserList from '../pages/users/UserList'
+import CreateUser from '../pages/users/CreateUser'
+import EditUser from '../pages/users/EditUser'
 import { ProtectedRoute } from './ProtectedRoute'
 
 const UserRoutes: React.FC = () => {

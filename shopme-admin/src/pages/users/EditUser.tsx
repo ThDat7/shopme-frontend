@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Card, Spin, message } from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
-import UserForm from './UserForm'
+import UserForm from '../../components/user/UserForm'
 import { UserCreateRequest, UserDetailResponse } from '../../types/userTypes'
 import { userService } from '../../services/userService'
 
@@ -19,7 +19,7 @@ const EditUser: React.FC = () => {
     try {
       if (!id) return
       const response = await userService.getUser(parseInt(id))
-      setUser(response.result)
+      setUser(response)
     } catch (error) {
       console.error('Error fetching user:', error)
       message.error('Failed to fetch user')

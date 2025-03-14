@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { User, UserParams } from '../../types/userTypes'
+import { UserListResponse, UserParams } from '../../types/userTypes'
 import { userService } from '../../services/userService'
 import {
   Table,
@@ -29,12 +29,12 @@ const { Search } = Input
 
 const UserList: React.FC = () => {
   const navigate = useNavigate()
-  const [users, setUsers] = useState<User[]>([])
+  const [users, setUsers] = useState<UserListResponse[]>([])
   const [totalPages, setTotalPages] = useState(0)
   const [loading, setLoading] = useState(false)
   const [params, setParams] = useState<UserParams>({
-    page: '0',
-    size: '10',
+    page: 0,
+    size: 10,
     sortField: 'firstName',
     sortDirection: 'asc',
     keyword: '',
@@ -44,8 +44,8 @@ const UserList: React.FC = () => {
     try {
       setLoading(true)
       const response = await userService.listByPage(params)
-      setUsers(response.result.content)
-      setTotalPages(response.result.totalPages)
+      setUsers(response.content)
+      setTotalPages(response.totalPages)
     } catch (error) {
       console.error('Error fetching users:', error)
       message.error('Failed to fetch users')
@@ -62,7 +62,7 @@ const UserList: React.FC = () => {
     setParams({
       ...params,
       keyword: value,
-      page: '0', // Reset to first page when searching
+      page: 0, // Reset to first page when searching
     })
   }
 
@@ -91,9 +91,21 @@ const UserList: React.FC = () => {
     }
   }
 
-  const handleExport = async (format: 'csv' | 'pdf' | 'excel') => {
+  const handleExport = async (format: 'csv' | 'excel' | 'pdf') => {
     try {
-      await userService.exportUsers(format)
+      const data = await userService.listAllForExport()
+
+      switch (format) {
+        case 'csv':
+          userService.exportToCSV(data, 'users')
+          break
+        case 'excel':
+          userService.exportToExcel(data, 'users')
+          break
+        case 'pdf':
+          userService.exportToPDF(data, 'users')
+          break
+      }
       message.success(`Users exported to ${format.toUpperCase()} successfully`)
     } catch (error) {
       console.error('Error exporting users:', error)
@@ -122,7 +134,7 @@ const UserList: React.FC = () => {
     },
   ]
 
-  const columns: ColumnsType<User> = [
+  const columns: ColumnsType<UserListResponse> = [
     {
       title: 'Photo',
       dataIndex: 'photos',
@@ -165,7 +177,7 @@ const UserList: React.FC = () => {
       title: 'Enabled',
       dataIndex: 'enabled',
       key: 'enabled',
-      render: (enabled: boolean, record: User) => (
+      render: (enabled: boolean, record: UserListResponse) => (
         <Switch
           checked={enabled}
           onChange={(checked) => handleStatusChange(record.id, checked)}
@@ -175,7 +187,7 @@ const UserList: React.FC = () => {
     {
       title: 'Actions',
       key: 'actions',
-      render: (_, record: User) => (
+      render: (_, record: UserListResponse) => (
         <Space>
           <Button
             type='primary'
@@ -208,7 +220,7 @@ const UserList: React.FC = () => {
   const handleTableChange = (pagination: any, _: any, sorter: any) => {
     const newParams: UserParams = {
       ...params,
-      page: (pagination.current - 1).toString(),
+      page: pagination.current - 1,
       sortField: sorter.field || 'firstName',
       sortDirection: sorter.order === 'ascend' ? 'asc' : 'desc',
     }
@@ -252,9 +264,9 @@ const UserList: React.FC = () => {
         loading={loading}
         onChange={handleTableChange}
         pagination={{
-          total: totalPages * parseInt(params.size || '10'),
-          pageSize: parseInt(params.size || '10'),
-          current: parseInt(params.page || '0') + 1,
+          total: totalPages * (params.size || 10),
+          pageSize: params.size || 10,
+          current: (params.page || 0) + 1,
           showSizeChanger: true,
           showTotal: (total) => `Total ${total} items`,
         }}

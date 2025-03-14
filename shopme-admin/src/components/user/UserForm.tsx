@@ -52,7 +52,7 @@ const UserForm: React.FC<UserFormProps> = ({
   const fetchRoles = async () => {
     try {
       const response = await userService.getRoles()
-      setRoles(response.result)
+      setRoles(response)
     } catch (error) {
       console.error('Error fetching roles:', error)
       message.error('Failed to fetch roles')
@@ -192,7 +192,7 @@ const UserForm: React.FC<UserFormProps> = ({
             />
           </Form.Item>
 
-          <Form.Item label='Enabled' name='enabled' valuePropName='checked'>
+          <Form.Item name='enabled' label='Enabled' valuePropName='checked'>
             <Switch />
           </Form.Item>
 

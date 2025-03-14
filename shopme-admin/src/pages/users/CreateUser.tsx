@@ -1,7 +1,7 @@
 import React from 'react'
 import { Card } from 'antd'
 import { useNavigate } from 'react-router-dom'
-import UserForm from './UserForm'
+import UserForm from '../../components/user/UserForm'
 import { UserCreateRequest } from '../../types/userTypes'
 import { userService } from '../../services/userService'
 

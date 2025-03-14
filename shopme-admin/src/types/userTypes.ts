@@ -1,24 +1,24 @@
+import { PaginationParams } from './commonTypes'
+
 export interface User {
   id: number
   email: string
   firstName: string
   lastName: string
   photos: string
-  roles: string[]
   enabled: boolean
 }
 
-export interface UserListResponse {
-  content: User[]
-  totalPages: number
-}
-
-export interface UserDetailRequest {
-  id: number
+export interface UserListResponse extends User {
+  roles: string[]
 }
 
 export interface UserDetailResponse extends User {
   roleIds: Set<number>
+}
+
+export interface UserExportResponse extends User {
+  roles: string[]
 }
 
 export interface ApiResponse<T> {
@@ -27,11 +27,7 @@ export interface ApiResponse<T> {
   result: T
 }
 
-export interface UserParams {
-  page?: string
-  size?: string
-  sortField?: string
-  sortDirection?: string
+export interface UserParams extends PaginationParams {
   keyword?: string
 }
 
@@ -51,7 +47,13 @@ export interface UserCreateRequest {
   image?: File
 }
 
-export interface UserUpdateRequest extends Omit<UserCreateRequest, 'password'> {
+export interface UserUpdateRequest {
   id: number
+  email: string
   password?: string
+  firstName: string
+  lastName: string
+  enabled: boolean
+  roleIds: Set<number>
+  image?: File
 }

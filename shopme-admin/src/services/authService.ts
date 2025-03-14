@@ -3,6 +3,7 @@ import {
   AuthenticationRequest,
   AuthenticationResponse,
   IntrospectResponse,
+  UserProfile,
 } from '../types/authTypes'
 import { ApiResponse } from '../types/userTypes'
 
