@@ -62,6 +62,11 @@ const Header: React.FC = () => {
       label: <Link to='/categories'>Categories</Link>,
     },
     {
+      key: 'brands',
+      icon: <AppstoreOutlined />,
+      label: <Link to='/brands'>Brands</Link>,
+    },
+    {
       key: 'products',
       icon: <ShoppingOutlined />,
       label: <Link to='/products'>Products</Link>,
@@ -76,6 +81,7 @@ const Header: React.FC = () => {
   const getSelectedKey = () => {
     if (currentPath.includes('/users')) return 'users'
     if (currentPath.includes('/categories')) return 'categories'
+    if (currentPath.includes('/brands')) return 'brands'
     if (currentPath.includes('/products')) return 'products'
     if (currentPath.includes('/settings')) return 'settings'
     return 'dashboard'

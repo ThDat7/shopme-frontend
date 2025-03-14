@@ -6,6 +6,7 @@ import { ProtectedRoute } from './ProtectedRoute'
 import UserRoutes from './UserRoutes'
 import CategoryRoutes from './CategoryRoutes'
 import ProfilePage from '../pages/profile/ProfilePage'
+import BrandRoutes from './BrandRoutes'
 
 const AppRoutes: React.FC = () => {
   return (
@@ -24,6 +25,14 @@ const AppRoutes: React.FC = () => {
         element={
           <ProtectedRoute>
             <CategoryRoutes />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path='/brands/*'
+        element={
+          <ProtectedRoute>
+            <BrandRoutes />
           </ProtectedRoute>
         }
       />
