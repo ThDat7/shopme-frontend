@@ -21,6 +21,10 @@ import {
   CategoryUpdateRequest,
 } from '../../types/categoryTypes'
 import { RcFile } from 'antd/lib/upload'
+import {
+  findCategoryPath,
+  renderCategoryOptions,
+} from '../../utils/categoryUtils'
 
 interface CategoryFormProps {
   initialData?: CategoryDetailResponse
@@ -52,6 +56,16 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
     }
   }, [initialData])
 
+  useEffect(() => {
+    if (initialData?.parentID && categories.length > 0) {
+      const path =
+        findCategoryPath(initialData.parentID, categories) || undefined
+      form.setFieldsValue({
+        parentID: path,
+      })
+    }
+  }, [categories, initialData])
+
   const fetchCategories = async () => {
     try {
       const response = await categoryService.getAllInForm()
@@ -61,18 +75,10 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
     }
   }
 
-  const transformCategoriesToCascaderOptions = (
-    categories: CategorySelectResponse[]
-  ): any[] => {
-    return categories.map((category) => ({
-      value: category.id,
-      label: category.name,
-      disabled: isEditMode && initialData?.id === category.id,
-      children: category.children
-        ? transformCategoriesToCascaderOptions(category.children)
-        : undefined,
-    }))
-  }
+  const options = renderCategoryOptions(categories).map((option) => ({
+    ...option,
+    disabled: isEditMode && initialData?.id === option.value,
+  }))
 
   const beforeUpload = (file: RcFile) => {
     const isImage = file.type.startsWith('image/')
@@ -157,7 +163,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
 
         <Form.Item name='parentID' label='Parent Category'>
           <Cascader
-            options={transformCategoriesToCascaderOptions(categories)}
+            options={options}
             placeholder='Select parent category'
             changeOnSelect
             expandTrigger='hover'
@@ -165,7 +171,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
               filter: (inputValue, path) => {
                 return path.some(
                   (option) =>
-                    option.label
+                    (option.label as string)
                       .toLowerCase()
                       .indexOf(inputValue.toLowerCase()) > -1
                 )

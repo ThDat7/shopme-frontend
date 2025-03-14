@@ -9,6 +9,13 @@ export interface ExportableData {
 }
 
 export class ExportUtils {
+  private static processValue(value: any): string {
+    if (Array.isArray(value)) {
+      return value.join(', ')
+    }
+    return value?.toString() || ''
+  }
+
   static exportToCSV<T extends ExportableData>(
     data: T[],
     filename: string,
@@ -17,7 +24,7 @@ export class ExportUtils {
     const csvData = data.map((item) => {
       const row: Record<string, any> = {}
       columns.forEach(({ key, label }) => {
-        row[label] = item[key] || ''
+        row[label] = this.processValue(item[key])
       })
       return row
     })
@@ -36,7 +43,7 @@ export class ExportUtils {
     const excelData = data.map((item) => {
       const row: Record<string, any> = {}
       columns.forEach(({ key, label }) => {
-        row[label] = item[key] || ''
+        row[label] = this.processValue(item[key])
       })
       return row
     })
@@ -65,7 +72,7 @@ export class ExportUtils {
 
     const tableColumn = columns.map((col) => col.label)
     const tableRows = data.map((item) =>
-      columns.map(({ key }) => item[key]?.toString() || '')
+      columns.map(({ key }) => this.processValue(item[key]))
     )
 
     autoTable(doc, {
