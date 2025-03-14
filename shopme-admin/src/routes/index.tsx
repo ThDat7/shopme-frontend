@@ -4,8 +4,8 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import LoginPage from '../pages/auth/LoginPage'
 import { ProtectedRoute } from './ProtectedRoute'
 import UserRoutes from './UserRoutes'
+import CategoryRoutes from './CategoryRoutes'
 import ProfilePage from '../pages/profile/ProfilePage'
-import Layout from '../components/layout/Layout'
 
 const AppRoutes: React.FC = () => {
   return (
@@ -15,9 +15,15 @@ const AppRoutes: React.FC = () => {
         path='/users/*'
         element={
           <ProtectedRoute>
-            <Layout>
-              <UserRoutes />
-            </Layout>
+            <UserRoutes />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path='/categories/*'
+        element={
+          <ProtectedRoute>
+            <CategoryRoutes />
           </ProtectedRoute>
         }
       />
@@ -25,13 +31,10 @@ const AppRoutes: React.FC = () => {
         path='/profile'
         element={
           <ProtectedRoute>
-            <Layout>
-              <ProfilePage />
-            </Layout>
+            <ProfilePage />
           </ProtectedRoute>
         }
       />
-      <Route path='/users/*' element={<UserRoutes />} />
       <Route path='/' element={<Navigate to='/users' replace />} />
     </Routes>
   )
