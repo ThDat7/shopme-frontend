@@ -57,3 +57,8 @@ export interface FormField {
   disabled?: boolean
   hidden?: boolean
 }
+
+export interface FormSelectOption {
+  key: string
+  value: string
+}

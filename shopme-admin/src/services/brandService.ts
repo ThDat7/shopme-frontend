@@ -10,6 +10,7 @@ import {
 
 import { API_ENDPOINTS } from '../config/appConfig'
 import { ExportUtils } from '../utils/exportUtils'
+import { FormSelectOption } from '../types/commonTypes'
 
 class BrandService extends BaseService {
   async listByPage(params: BrandListParams) {
@@ -125,6 +126,28 @@ class BrandService extends BaseService {
       { key: 'name', label: 'Name' },
       { key: 'categories', label: 'Categories' },
     ])
+  }
+
+  async listAllForFormSelection(): Promise<FormSelectOption[]> {
+    try {
+      const response = await this.get<FormSelectOption[]>(
+        `${API_ENDPOINTS.BRANDS}/form-select`
+      )
+      return response.result
+    } catch (error) {
+      return this.handleError(error)
+    }
+  }
+
+  async listCategoriesByBrand(brandId: number): Promise<FormSelectOption[]> {
+    try {
+      const response = await this.get<FormSelectOption[]>(
+        `${API_ENDPOINTS.BRANDS}/${brandId}/categories`
+      )
+      return response.result
+    } catch (error) {
+      return this.handleError(error)
+    }
   }
 }
 

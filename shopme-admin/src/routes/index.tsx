@@ -8,6 +8,8 @@ import CategoryRoutes from './CategoryRoutes'
 import ProfilePage from '../pages/profile/ProfilePage'
 import BrandRoutes from './BrandRoutes'
 import ProductList from '../pages/products/ProductList'
+import CreateProduct from '../pages/products/CreateProduct'
+import EditProduct from '../pages/products/EditProduct'
 
 const AppRoutes: React.FC = () => {
   return (
@@ -50,6 +52,22 @@ const AppRoutes: React.FC = () => {
         element={
           <ProtectedRoute>
             <ProductList />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path='/products/create'
+        element={
+          <ProtectedRoute>
+            <CreateProduct />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path='/products/edit/:id'
+        element={
+          <ProtectedRoute>
+            <EditProduct />
           </ProtectedRoute>
         }
       />
