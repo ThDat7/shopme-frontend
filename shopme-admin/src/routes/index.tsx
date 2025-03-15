@@ -7,6 +7,7 @@ import UserRoutes from './UserRoutes'
 import CategoryRoutes from './CategoryRoutes'
 import ProfilePage from '../pages/profile/ProfilePage'
 import BrandRoutes from './BrandRoutes'
+import ProductList from '../pages/products/ProductList'
 
 const AppRoutes: React.FC = () => {
   return (
@@ -41,6 +42,14 @@ const AppRoutes: React.FC = () => {
         element={
           <ProtectedRoute>
             <ProfilePage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path='/products'
+        element={
+          <ProtectedRoute>
+            <ProductList />
           </ProtectedRoute>
         }
       />
