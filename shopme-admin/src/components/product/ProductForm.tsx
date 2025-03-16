@@ -25,6 +25,7 @@ import { RcFile, UploadFile } from 'antd/es/upload'
 import {
   ProductCreateRequest,
   ProductDetailResponse,
+  ProductImage,
   ProductSpecific,
 } from '../../types/productTypes'
 import { brandService } from '../../services/brandService'
@@ -37,8 +38,8 @@ const { TabPane } = Tabs
 const { Option } = Select
 
 interface ProductFormProps {
-  initialValues?: ProductDetailResponse
-  onSubmit: (values: ProductCreateRequest) => Promise<void>
+  initialValues: any
+  onSubmit: (values: any) => Promise<void>
   submitButtonText: string
   loading?: boolean
 }
@@ -52,13 +53,10 @@ const ProductForm: React.FC<ProductFormProps> = ({
   const [form] = Form.useForm()
   const [brands, setBrands] = useState<FormSelectOption[]>([])
   const [categories, setCategories] = useState<FormSelectOption[]>([])
+  const [extraImageFileList, setExtraImageFileList] = useState<UploadFile[]>([])
+  const [mainImageFileList, setMainImageFileList] = useState<UploadFile[]>([])
   const [mainImageUrl, setMainImageUrl] = useState<string>()
-  const [mainImageFile, setMainImageFile] = useState<RcFile>()
-  // const [extraImageUrls, setExtraImageUrls] = useState<string[]>([])
-  const [fileListExtraImages, setFileListExtraImages] = useState<UploadFile[]>(
-    []
-  )
-  const [extraImageFiles, setExtraImageFiles] = useState<RcFile[]>([])
+
   const [selectedBrandId, setSelectedBrandId] = useState<number>()
   const limitImageSize = APP_CONFIG.IMAGE_UPLOAD.MAX_SIZE
 
@@ -74,17 +72,24 @@ const ProductForm: React.FC<ProductFormProps> = ({
 
       // Set images
       if (initialValues.mainImage) {
+        setMainImageFileList([
+          {
+            uid: '1',
+            name: initialValues.mainImage.split('/').pop() || '',
+            status: 'done',
+            url: initialValues.mainImage,
+          },
+        ])
         setMainImageUrl(initialValues.mainImage)
       }
 
       if (initialValues.images && initialValues.images.length > 0) {
-        // setExtraImageUrls(initialValues.images)
-        setFileListExtraImages(
-          initialValues.images.map((image, index) => ({
-            uid: index.toString(),
-            name: image.split('/').pop() || '',
+        setExtraImageFileList(
+          initialValues.images.map((image: ProductImage) => ({
+            uid: image.id.toString(),
+            name: image.url.split('/').pop() || '',
             status: 'done',
-            url: image,
+            url: image.url,
           }))
         )
       }
@@ -139,57 +144,40 @@ const ProductForm: React.FC<ProductFormProps> = ({
     return false // Prevent automatic upload
   }
 
-  const handleMainImageChange = (info: any) => {
-    const file = info.fileList[0]
-    if (file) {
-      setMainImageFile(file.originFileObj)
+  const handleMainImageChange = async ({ fileList }: any) => {
+    setMainImageFileList(fileList)
 
-      // Preview the image
-      const reader = new FileReader()
-      reader.onload = () => {
-        setMainImageUrl(reader.result as string)
-      }
-      reader.readAsDataURL(file.originFileObj)
+    if (fileList.length > 0 && fileList[0].originFileObj) {
+      const fileURL = URL.createObjectURL(fileList[0].originFileObj)
+      setMainImageUrl(fileURL)
     }
   }
 
-  const handleExtraImagesChange = (info: any) => {
-    setFileListExtraImages(info)
-    // const { fileList } = info
-    // const lastFileAction = info.file
-    // const isRemoved = lastFileAction.status === 'removed'
-    // if (isRemoved) {
-    //   const newExtraImageFiles = extraImageFiles.filter(
-    //     (file) => file !== lastFileAction.originFileObj
-    //   )
-    //   setExtraImageFiles(newExtraImageFiles)
-    // }
-    // const files = fileList.map((file: any) => file.originFileObj)
-    // const newExtraImageFiles = [...extraImageFiles, ...files]
-    // setExtraImageFiles(newExtraImageFiles)
-    // const urls: string[] = []
-    // fileList.forEach((file: any) => {
-    //   if (file.url) {
-    //     urls.push(file.url)
-    //   } else if (file.originFileObj) {
-    //     const reader = new FileReader()
-    //     reader.onload = () => {
-    //       urls.push(reader.result as string)
-    //       if (urls.length === fileList.length) {
-    //         setExtraImageUrls([...urls])
-    //       }
-    //     }
-    //     reader.readAsDataURL(file.originFileObj)
-    //   }
-    // })
+  const handleExtraImagesChange = ({ fileList }: any) => {
+    fileList.forEach((file: any) => {
+      if (file.originFileObj) {
+        const fileURL = URL.createObjectURL(file.originFileObj)
+        file.url = fileURL
+      }
+    })
+    setExtraImageFileList(fileList)
   }
 
   const handleFinish = async (values: any) => {
-    const productData: ProductCreateRequest = {
+    const mainImage = mainImageFileList?.[0].originFileObj as RcFile
+    const images = extraImageFileList
+      .map((file) => file.originFileObj as RcFile)
+      .filter(Boolean)
+    const remainingImageIds = extraImageFileList
+      .filter((file) => file.status === 'done')
+      .map((file) => file.uid)
+
+    const productData = {
       ...initialValues,
       ...values,
-      mainImage: mainImageFile,
-      images: extraImageFiles,
+      mainImage,
+      images,
+      remainingImageIds,
       details: values.details || [],
     }
 
@@ -347,6 +335,8 @@ const ProductForm: React.FC<ProductFormProps> = ({
                     beforeUpload={beforeUpload}
                     onChange={handleMainImageChange}
                     showUploadList={false}
+                    fileList={mainImageFileList}
+                    maxCount={1}
                   >
                     <Button icon={<UploadOutlined />}>
                       {mainImageUrl ? 'Change Image' : 'Upload Image'}
@@ -360,7 +350,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
                 <Form.Item label='Extra Images'>
                   <Upload
                     listType='picture-card'
-                    fileList={fileListExtraImages}
+                    fileList={extraImageFileList}
                     beforeUpload={beforeUpload}
                     onChange={handleExtraImagesChange}
                     multiple

@@ -56,7 +56,9 @@ const ProductList: React.FC = () => {
       const result = await productService.listByPage(params)
       setProducts(result.content)
       setTotalPages(result.totalPages)
-      setTotalElements(result.totalElements)
+      setTotalElements(
+        result.totalPages * (params.size || 10) || result.totalElements
+      )
     } catch (error) {
       console.error('Failed to fetch products:', error)
     } finally {

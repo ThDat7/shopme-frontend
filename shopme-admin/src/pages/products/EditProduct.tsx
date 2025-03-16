@@ -5,6 +5,7 @@ import ProductForm from '../../components/product/ProductForm'
 import {
   ProductCreateRequest,
   ProductDetailResponse,
+  ProductUpdateRequest,
 } from '../../types/productTypes'
 import { productService } from '../../services/productService'
 
@@ -35,7 +36,7 @@ const EditProduct: React.FC = () => {
     }
   }
 
-  const handleSubmit = async (values: ProductCreateRequest) => {
+  const handleSubmit = async (values: ProductUpdateRequest) => {
     if (!id) return
 
     setSubmitting(true)

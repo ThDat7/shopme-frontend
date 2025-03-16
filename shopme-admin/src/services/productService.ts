@@ -81,6 +81,10 @@ class ProductService extends BaseService {
   async updateProduct(id: number, data: ProductUpdateRequest) {
     try {
       const formData = this.productFormToFormData(data)
+      data.remainingImageIds.forEach((id) =>
+        formData.append('remainingImageIds', id.toString())
+      )
+
       if (data.mainImage) formData.append('mainImage', data.mainImage)
       data.images.forEach((image) => formData.append('images', image))
 

@@ -34,10 +34,15 @@ export interface ProductListResponse extends Product {
   brand: String
 }
 
+export interface ProductImage {
+  id: number
+  url: string
+}
+
 export interface ProductDetailResponse extends ProductForm {
   id: number
   mainImage: string
-  images: string[]
+  images: ProductImage[]
   createdTime: Date
   updatedTime: Date
 }
@@ -50,6 +55,7 @@ export interface ProductCreateRequest extends ProductForm {
 export interface ProductUpdateRequest extends ProductForm {
   mainImage: File
   images: File[]
+  remainingImageIds: number[]
 }
 
 export interface ProductExportResponse extends Product {
