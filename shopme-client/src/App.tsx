@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { ConfigProvider } from 'antd'
 import Layout from './components/layout/Layout'
 import HomePage from './pages/home/HomePage'
+import CategoryPage from './pages/category/CategoryPage'
 import ProductDetailPage from './pages/product/ProductDetailPage'
 import ProductListPage from './pages/product/ProductListPage'
 import { ToastContainer } from 'react-toastify'
@@ -20,6 +21,8 @@ const App: React.FC = () => {
         <Routes>
           <Route path='/' element={<Layout />}>
             <Route index element={<HomePage />} />
+            <Route path='categories' element={<CategoryPage />} />
+            <Route path='categories/:id' element={<CategoryPage />} />
             <Route path='products' element={<ProductListPage />} />
             <Route path='products/:id' element={<ProductDetailPage />} />
             {/* Other routes will be added here */}
