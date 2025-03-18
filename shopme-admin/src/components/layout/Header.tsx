@@ -17,6 +17,7 @@ import {
   ShoppingOutlined,
   SettingOutlined,
   LogoutOutlined,
+  GlobalOutlined,
 } from '@ant-design/icons'
 import { useAuth } from '../../contexts/AuthContext'
 
@@ -76,6 +77,11 @@ const Header: React.FC = () => {
       icon: <SettingOutlined />,
       label: <Link to='/settings'>Settings</Link>,
     },
+    {
+      key: 'locations',
+      icon: <GlobalOutlined />,
+      label: <Link to='/locations'>Locations</Link>,
+    },
   ]
 
   const getSelectedKey = () => {
@@ -84,6 +90,7 @@ const Header: React.FC = () => {
     if (currentPath.includes('/brands')) return 'brands'
     if (currentPath.includes('/products')) return 'products'
     if (currentPath.includes('/settings')) return 'settings'
+    if (currentPath.includes('/locations')) return 'locations'
     return 'dashboard'
   }
 

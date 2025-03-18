@@ -1,11 +1,15 @@
 export const API_BASE_URL = 'http://localhost:8080/api/v1'
 
 export const API_ENDPOINTS = {
+  SETTINGS: '/settings',
   PRODUCTS: '/products',
   BRANDS: '/brands',
   CATEGORIES: '/categories',
   USERS: '/users',
   AUTH: '/auth',
+  LOCATIONS: '/locations',
+  LOCATIONS_COUNTRIES: '/countries',
+  LOCATIONS_STATES: '/states',
 }
 
 export const APP_CONFIG = {
@@ -24,6 +28,10 @@ export const APP_CONFIG = {
 export const ROUTES = {
   DASHBOARD: '/',
 
+  PRODUCTS: '/products',
+  PRODUCTS_NEW: '/products/new',
+  PRODUCTS_EDIT: '/products/edit/:id',
+
   BRANDS: '/brands',
   BRANDS_NEW: '/brands/new',
   BRANDS_EDIT: '/brands/edit/:id',
@@ -36,4 +44,10 @@ export const ROUTES = {
   USERS: '/users',
   USERS_NEW: '/users/new',
   USERS_EDIT: '/users/edit/:id',
+
+  SETTINGS: '/settings',
+
+  LOCATIONS: '/locations',
+  LOCATIONS_COUNTRIES: '/locations/countries',
+  LOCATIONS_STATES: '/locations/states',
 }
