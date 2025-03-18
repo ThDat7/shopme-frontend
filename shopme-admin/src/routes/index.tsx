@@ -10,6 +10,7 @@ import BrandRoutes from './BrandRoutes'
 import ProductList from '../pages/products/ProductList'
 import CreateProduct from '../pages/products/CreateProduct'
 import EditProduct from '../pages/products/EditProduct'
+import SettingRoutes from './SettingRoutes'
 import LocationRoutes from './locationRoutes'
 
 const AppRoutes: React.FC = () => {
@@ -69,6 +70,14 @@ const AppRoutes: React.FC = () => {
         element={
           <ProtectedRoute>
             <EditProduct />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path='/settings/*'
+        element={
+          <ProtectedRoute>
+            <SettingRoutes />
           </ProtectedRoute>
         }
       />
