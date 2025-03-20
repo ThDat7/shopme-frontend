@@ -3,6 +3,7 @@ export const API_BASE_URL = 'http://localhost/api/v1'
 export const API_ENDPOINTS = {
   PRODUCTS: '/products',
   CATEGORIES: '/categories',
+  AUTH: '/auth'
 }
 
 export const APP_CONFIG = {
@@ -16,7 +17,10 @@ export const APP_CONFIG = {
     DURATION: 3000,
     POSITION: 'top-right',
   },
-}
+
+  GOOGLE_CLIENT_ID:
+    '1033932562819-mda9gtjhdtqs6fc6itm82p1ic986r682.apps.googleusercontent.com',
+} as const
 
 export const ROUTES = {
   DASHBOARD: '/',

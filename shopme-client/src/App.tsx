@@ -10,8 +10,7 @@ import ProductListPage from './pages/product/ProductListPage'
 import { ToastContainer } from 'react-toastify'
 import theme from './theme/themeConfig'
 import './App.css'
-
-// import { AuthProvider } from './contexts/AuthContext'
+import LoginForm from './components/authentication/LoginForm'
 
 const App: React.FC = () => {
   return (
@@ -26,6 +25,7 @@ const App: React.FC = () => {
             <Route path='products' element={<ProductListPage />} />
             <Route path='products/:id' element={<ProductDetailPage />} />
             {/* Other routes will be added here */}
+            <Route path='/login' element={<LoginForm />} />
           </Route>
         </Routes>
         <ToastContainer
