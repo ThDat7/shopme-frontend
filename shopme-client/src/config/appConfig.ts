@@ -3,7 +3,8 @@ export const API_BASE_URL = 'http://localhost/api/v1'
 export const API_ENDPOINTS = {
   PRODUCTS: '/products',
   CATEGORIES: '/categories',
-  AUTH: '/auth'
+  AUTH: '/auth',
+  CART: '/cart',
 }
 
 export const APP_CONFIG = {
@@ -29,4 +30,5 @@ export const ROUTES = {
   PRODUCT_DETAIL: '/products/:id',
   CATEGORIES: '/categories',
   LEAF_CATEGORIES: '/categories/leaf-categories',
+  CART: '/cart',
 }

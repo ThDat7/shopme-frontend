@@ -24,6 +24,7 @@ import {
   ShoppingCartOutlined,
   MenuOutlined,
   SearchOutlined,
+  EnvironmentOutlined,
 } from '@ant-design/icons'
 // import { useAuth } from '../../contexts/AuthContext'
 
@@ -49,6 +50,12 @@ const Header: React.FC = () => {
       icon: <UserOutlined />,
       label: 'My Profile',
       onClick: () => navigate('/profile'),
+    },
+    {
+      key: 'addresses',
+      icon: <EnvironmentOutlined />,
+      label: 'My Addresses',
+      onClick: () => navigate('/addresses'),
     },
     {
       key: 'logout',
@@ -139,9 +146,14 @@ const Header: React.FC = () => {
                 <ShoppingCartOutlined className='text-2xl' />
               </Badge>
             </Link>
-            <Link to='/account' className='text-gray-600 hover:text-primary'>
+            <Dropdown menu={{ items: userMenuItems }} placement='bottomRight'>
+              <a className='text-gray-600 hover:text-primary'>
+                <UserOutlined className='text-2xl' />
+              </a>
+            </Dropdown>
+            {/* <Link to='/account' className='text-gray-600 hover:text-primary'>
               <UserOutlined className='text-2xl' />
-            </Link>
+            </Link> */}
             <button
               className='md:hidden text-gray-600'
               onClick={() => setMobileMenuOpen(true)}
@@ -177,6 +189,14 @@ const Header: React.FC = () => {
           <Link to='/about' className='text-gray-600 hover:text-primary'>
             Giới thiệu
           </Link>
+          <Link to='/addresses' className='text-gray-600 hover:text-primary'>
+            Địa chỉ của tôi
+          </Link>
+          <div className='border-t border-gray-200 my-2 pt-2'>
+            <Link to='/cart' className='text-gray-600 hover:text-primary'>
+              Giỏ hàng
+            </Link>
+          </div>
         </div>
       </Drawer>
     </header>

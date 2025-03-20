@@ -13,6 +13,7 @@ import {
 import { ShoppingCartOutlined } from '@ant-design/icons'
 import { ProductDetailResponse } from '../../types/productTypes'
 import productService from '../../services/productService'
+import AddToCartButton from '../../components/cart/AddToCartButton'
 
 const ProductDetailPage: React.FC = () => {
   const { id } = useParams()
@@ -171,14 +172,15 @@ const ProductDetailPage: React.FC = () => {
             <p className='text-gray-600'>{product.shortDescription}</p>
           </div>
 
-          <Button
+          {/* <Button
             type='primary'
             size='large'
             icon={<ShoppingCartOutlined />}
             disabled={!product.inStock}
           >
             Thêm vào giỏ hàng
-          </Button>
+          </Button> */}
+          <AddToCartButton productId={product.id} />
         </div>
       </div>
 

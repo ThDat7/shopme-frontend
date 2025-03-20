@@ -11,6 +11,7 @@ import { ToastContainer } from 'react-toastify'
 import theme from './theme/themeConfig'
 import './App.css'
 import LoginForm from './components/authentication/LoginForm'
+import CartPage from './pages/cart/CartPage'
 
 const App: React.FC = () => {
   return (
@@ -24,6 +25,7 @@ const App: React.FC = () => {
             <Route path='categories/:id' element={<CategoryPage />} />
             <Route path='products' element={<ProductListPage />} />
             <Route path='products/:id' element={<ProductDetailPage />} />
+            <Route path='/cart' element={<CartPage />} />
             {/* Other routes will be added here */}
             <Route path='/login' element={<LoginForm />} />
           </Route>
