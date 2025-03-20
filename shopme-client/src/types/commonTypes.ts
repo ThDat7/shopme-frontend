@@ -26,3 +26,8 @@ export interface ApiResponse<T> {
   message: string
   result: T
 }
+
+export interface FormSelectResponse {
+  key: string
+  value: string
+}

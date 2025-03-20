@@ -7,6 +7,9 @@ import HomePage from './pages/home/HomePage'
 import CategoryPage from './pages/category/CategoryPage'
 import ProductDetailPage from './pages/product/ProductDetailPage'
 import ProductListPage from './pages/product/ProductListPage'
+import AddressListPage from './pages/address/AddressListPage'
+import AddressNewPage from './pages/address/AddressNewPage'
+import AddressEditPage from './pages/address/AddressEditPage'
 import { ToastContainer } from 'react-toastify'
 import theme from './theme/themeConfig'
 import './App.css'
@@ -26,6 +29,9 @@ const App: React.FC = () => {
             <Route path='products' element={<ProductListPage />} />
             <Route path='products/:id' element={<ProductDetailPage />} />
             <Route path='/cart' element={<CartPage />} />
+            <Route path='/addresses' element={<AddressListPage />} />
+            <Route path='/addresses/new' element={<AddressNewPage />} />
+            <Route path='/addresses/edit/:id' element={<AddressEditPage />} />
             {/* Other routes will be added here */}
             <Route path='/login' element={<LoginForm />} />
           </Route>

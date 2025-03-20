@@ -5,6 +5,8 @@ export const API_ENDPOINTS = {
   CATEGORIES: '/categories',
   AUTH: '/auth',
   CART: '/cart',
+  ADDRESSES: '/addresses',
+  COUNTRIES: '/countries',
 }
 
 export const APP_CONFIG = {
@@ -31,4 +33,8 @@ export const ROUTES = {
   CATEGORIES: '/categories',
   LEAF_CATEGORIES: '/categories/leaf-categories',
   CART: '/cart',
+
+  ADDRESSES: '/addresses',
+  ADDRESS_NEW: '/addresses/new',
+  ADDRESS_EDIT: '/addresses/edit/:id',
 }
