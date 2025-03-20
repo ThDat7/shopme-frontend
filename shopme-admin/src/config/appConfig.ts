@@ -10,6 +10,7 @@ export const API_ENDPOINTS = {
   LOCATIONS: '/locations',
   LOCATIONS_COUNTRIES: '/countries',
   LOCATIONS_STATES: '/states',
+  SHIPPING_RATES: '/shipping-rates',
 }
 
 export const APP_CONFIG = {
@@ -26,7 +27,7 @@ export const APP_CONFIG = {
 }
 
 export const ROUTES = {
-  DASHBOARD: '/',
+  HOME: '/',
 
   PRODUCTS: '/products',
   PRODUCTS_NEW: '/products/new',
@@ -50,4 +51,8 @@ export const ROUTES = {
   LOCATIONS: '/locations',
   LOCATIONS_COUNTRIES: '/locations/countries',
   LOCATIONS_STATES: '/locations/states',
+
+  SHIPPING_RATES: '/shipping-rates',
+  SHIPPING_RATES_NEW: '/shipping-rates/new',
+  SHIPPING_RATES_EDIT: '/shipping-rates/edit/:id',
 }

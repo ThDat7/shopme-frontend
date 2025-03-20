@@ -18,6 +18,7 @@ import {
   SettingOutlined,
   LogoutOutlined,
   GlobalOutlined,
+  RocketOutlined,
 } from '@ant-design/icons'
 import { useAuth } from '../../contexts/AuthContext'
 
@@ -81,6 +82,11 @@ const Header: React.FC = () => {
       key: 'locations',
       icon: <GlobalOutlined />,
       label: <Link to='/locations'>Locations</Link>,
+    },
+    {
+      key: 'shippings',
+      icon: <RocketOutlined />,
+      label: <Link to='/shipping-rates'>Shipping Rates</Link>,
     },
   ]
 
