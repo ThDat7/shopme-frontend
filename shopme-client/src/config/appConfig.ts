@@ -7,6 +7,7 @@ export const API_ENDPOINTS = {
   CART: '/cart',
   ADDRESSES: '/addresses',
   COUNTRIES: '/countries',
+  CHECKOUT: '/checkout',
 }
 
 export const APP_CONFIG = {
@@ -26,14 +27,13 @@ export const APP_CONFIG = {
 } as const
 
 export const ROUTES = {
-  DASHBOARD: '/',
-
+  HOME: '/',
   PRODUCTS: '/products',
   PRODUCT_DETAIL: '/products/:id',
   CATEGORIES: '/categories',
   LEAF_CATEGORIES: '/categories/leaf-categories',
   CART: '/cart',
-
+  CHECKOUT: '/checkout',
   ADDRESSES: '/addresses',
   ADDRESS_NEW: '/addresses/new',
   ADDRESS_EDIT: '/addresses/edit/:id',

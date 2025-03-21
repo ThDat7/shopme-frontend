@@ -13,13 +13,13 @@ import { DeleteOutlined } from '@ant-design/icons'
 import type { ColumnsType } from 'antd/es/table'
 import { CartItem } from '../../types/cart'
 import cartService from '../../services/cartService'
-
+import { useNavigate } from 'react-router-dom'
 const { Title, Text } = Typography
 
 const CartPage: React.FC = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([])
   const [loading, setLoading] = useState(false)
-
+  const navigate = useNavigate()
   const fetchCartItems = async () => {
     try {
       setLoading(true)
@@ -171,7 +171,11 @@ const CartPage: React.FC = () => {
                   Total Amount: ${totalAmount.toFixed(2)}
                 </Title>
               </div>
-              <Button type='primary' size='large'>
+              <Button
+                type='primary'
+                size='large'
+                onClick={() => navigate('/checkout')}
+              >
                 Proceed to Checkout
               </Button>
             </div>
