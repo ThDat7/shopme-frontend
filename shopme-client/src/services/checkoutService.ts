@@ -3,7 +3,10 @@ import { API_ENDPOINTS } from '../config/appConfig'
 import {
   CalculateShippingRequest,
   CalculateShippingResponse,
-  PlaceOrderRequest,
+  PaymentMethod,
+  PlaceOrderCODRequest,
+  PlaceOrderPayOSRequest,
+  PlaceOrderPayOSResponse,
 } from '../types/checkout'
 
 class CheckoutService extends BaseService {
@@ -15,9 +18,24 @@ class CheckoutService extends BaseService {
     return response.result
   }
 
-  async placeOrder(request: PlaceOrderRequest) {
+  async getPaymentMethods() {
+    const response = await this.get<PaymentMethod[]>(
+      `${API_ENDPOINTS.CHECKOUT}/payment/methods`
+    )
+    return response.result
+  }
+
+  async placeOrderCOD(request: PlaceOrderCODRequest) {
     const response = await this.post<void>(
       `${API_ENDPOINTS.CHECKOUT}/payment/COD`,
+      request
+    )
+    return response.result
+  }
+
+  async placeOrderPayOS(request: PlaceOrderPayOSRequest) {
+    const response = await this.post<PlaceOrderPayOSResponse>(
+      `${API_ENDPOINTS.CHECKOUT}/payment/PAY_OS`,
       request
     )
     return response.result

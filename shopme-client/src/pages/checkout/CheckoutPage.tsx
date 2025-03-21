@@ -15,6 +15,8 @@ import {
   Divider,
   Space,
 } from 'antd'
+import { PaymentMethod } from '../../types/checkout'
+import { usePayOS, PayOSConfig } from '@payos/payos-checkout'
 import { ROUTES } from '../../config/appConfig'
 import checkoutService from '../../services/checkoutService'
 import cartService from '../../services/cartService'
@@ -23,7 +25,8 @@ import CheckoutAddressSelector from '../../components/checkout/CheckoutAddressSe
 import { CartItem } from '../../types/cart'
 import { AddressDetail } from '../../types/address'
 import {
-  PlaceOrderRequest,
+  PlaceOrderCODRequest,
+  PlaceOrderPayOSRequest,
 } from '../../types/checkout'
 
 const { Title, Text } = Typography
@@ -35,14 +38,37 @@ const CheckoutPage: React.FC = () => {
   const [selectedAddress, setSelectedAddress] = useState<AddressDetail | null>(
     null
   )
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([])
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('')
   const [shippingCost, setShippingCost] = useState(0)
   const [cartItems, setCartItems] = useState<CartItem[]>([])
   const [selectedItems, setSelectedItems] = useState<number[]>([])
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
+  // PayOS configuration
+  const payOSConfig: PayOSConfig = {
+    RETURN_URL: `${window.location.origin}${ROUTES.ORDER_COMPLETE}`,
+    ELEMENT_ID: 'payos-checkout',
+    CHECKOUT_URL: '', // Will be set after placing order
+    embedded: true,
+    onSuccess: (event: any) => {
+      message.success('Payment successful')
+      navigate(ROUTES.ORDER_COMPLETE)
+    },
+    onExit: () => {
+      message.info('Payment cancelled')
+    },
+    onCancel: () => {
+      message.warning('Payment cancelled')
+    },
+  }
+
+  const { open, exit } = usePayOS(payOSConfig)
+
   useEffect(() => {
     loadCartItems()
+    loadPaymentMethods()
   }, [])
 
   useEffect(() => {
@@ -77,6 +103,15 @@ const CheckoutPage: React.FC = () => {
     }
   }
 
+  const loadPaymentMethods = async () => {
+    try {
+      const methods = await checkoutService.getPaymentMethods()
+      setPaymentMethods(methods)
+    } catch (error) {
+      message.error('Failed to load payment methods')
+    }
+  }
+
   const calculateShipping = async () => {
     if (!selectedAddressId || selectedItems.length === 0) return
 
@@ -93,6 +128,10 @@ const CheckoutPage: React.FC = () => {
 
   const handleAddressSelect = (addressId: number) => {
     setSelectedAddressId(addressId)
+  }
+
+  const handlePaymentMethodSelect = (method: string) => {
+    setSelectedPaymentMethod(method)
   }
 
   const handleItemSelect = (productId: number, checked: boolean) => {
@@ -125,22 +164,37 @@ const CheckoutPage: React.FC = () => {
   const handlePlaceOrder = async () => {
     if (
       !selectedAddressId ||
+      !selectedPaymentMethod ||
       selectedItems.length === 0
     ) {
       message.error(
-        'Please select address and at least one item'
+        'Please select address, payment method, and at least one item'
       )
       return
     }
 
     try {
-      const request: PlaceOrderRequest = {
-        addressId: selectedAddressId,
-        cartItemIds: selectedItems,
+      if (selectedPaymentMethod === 'COD') {
+        const codRequest: PlaceOrderCODRequest = {
+          addressId: selectedAddressId,
+          cartItemIds: selectedItems,
+        }
+        await checkoutService.placeOrderCOD(codRequest)
+        message.success('Order placed successfully')
+        navigate(ROUTES.ORDER_COMPLETE)
+      } else if (selectedPaymentMethod === 'PAY_OS') {
+        const payosRequest: PlaceOrderPayOSRequest = {
+          addressId: selectedAddressId,
+          cartItemIds: selectedItems,
+          returnUrl: `${window.location.origin}${ROUTES.ORDER_COMPLETE}`,
+          cancelUrl: window.location.href,
+        }
+        const response = await checkoutService.placeOrderPayOS(payosRequest)
+        // Update PayOS config with checkout URL
+        payOSConfig.CHECKOUT_URL = response.checkoutUrl
+        // Open PayOS checkout
+        open()
       }
-      await checkoutService.placeOrder(request)
-      message.success('Order placed successfully')
-      navigate(ROUTES.ORDER_COMPLETE)
     } catch (error) {
       message.error('Failed to place order')
     }
@@ -213,6 +267,47 @@ const CheckoutPage: React.FC = () => {
     </Card>
   )
 
+  const renderPaymentSection = () => (
+    <Card title='Payment Method'>
+      <Radio.Group
+        onChange={(e) => handlePaymentMethodSelect(e.target.value)}
+        value={selectedPaymentMethod}
+        className='w-full'
+      >
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+          {paymentMethods.map((method) => (
+            <Radio.Button
+              key={method.method}
+              value={method.method}
+              className='h-auto p-4 flex items-center'
+            >
+              <div className='flex items-center space-x-3'>
+                {method.icon && (
+                  <img
+                    src={method.icon}
+                    alt={method.name}
+                    className='w-8 h-8'
+                  />
+                )}
+                <div>
+                  <Text strong>{method.name}</Text>
+                  {method.description && (
+                    <Text type='secondary' className='block'>
+                      {method.description}
+                    </Text>
+                  )}
+                </div>
+              </div>
+            </Radio.Button>
+          ))}
+        </div>
+      </Radio.Group>
+      {selectedPaymentMethod === 'PAY_OS' && (
+        <div id='payos-checkout' className='mt-4' />
+      )}
+    </Card>
+  )
+
   const renderOrderSummary = () => (
     <Card title='Order Summary' className='sticky top-4'>
       {selectedAddress && (
@@ -270,6 +365,7 @@ const CheckoutPage: React.FC = () => {
         onClick={handlePlaceOrder}
         disabled={
           !selectedAddressId ||
+          !selectedPaymentMethod ||
           selectedItems.length === 0
         }
       >
@@ -285,6 +381,7 @@ const CheckoutPage: React.FC = () => {
         <Col xs={24} lg={16}>
           {renderCartItems()}
           <div className='mt-6'>{renderAddressSection()}</div>
+          <div className='mt-6'>{renderPaymentSection()}</div>
         </Col>
         <Col xs={24} lg={8}>
           {renderOrderSummary()}

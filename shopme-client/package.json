@@ -17,6 +17,7 @@
     "@fortawesome/free-regular-svg-icons": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
+    "@payos/payos-checkout": "^1.0.8",
     "@react-oauth/google": "^0.12.1",
     "@tailwindcss/vite": "^4.0.14",
     "@types/axios": "^0.14.4",

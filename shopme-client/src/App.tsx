@@ -15,6 +15,7 @@ import theme from './theme/themeConfig'
 import './App.css'
 import LoginForm from './components/authentication/LoginForm'
 import CartPage from './pages/cart/CartPage'
+import CheckoutPage from './pages/checkout/CheckoutPage'
 
 const App: React.FC = () => {
   return (
@@ -29,6 +30,7 @@ const App: React.FC = () => {
             <Route path='products' element={<ProductListPage />} />
             <Route path='products/:id' element={<ProductDetailPage />} />
             <Route path='/cart' element={<CartPage />} />
+            <Route path='/checkout' element={<CheckoutPage />} />
             <Route path='/addresses' element={<AddressListPage />} />
             <Route path='/addresses/new' element={<AddressNewPage />} />
             <Route path='/addresses/edit/:id' element={<AddressEditPage />} />
