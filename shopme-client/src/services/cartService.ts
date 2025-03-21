@@ -29,7 +29,7 @@ class CartService extends BaseService {
     return items.reduce(
       (summary, item) => ({
         totalItems: summary.totalItems + item.quantity,
-        totalAmount: summary.totalAmount + item.subtotal,
+        totalAmount: summary.totalAmount + item.discountPrice * item.quantity,
       }),
       { totalItems: 0, totalAmount: 0 }
     )

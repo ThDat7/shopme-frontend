@@ -4,7 +4,8 @@ export interface CartItem {
   mainImage: string
   quantity: number
   price: number
-  discount: number
+  discountPercent: number
+  discountPrice: number
 }
 
 export interface CartItemRequest {

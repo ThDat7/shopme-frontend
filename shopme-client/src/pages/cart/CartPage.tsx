@@ -55,10 +55,6 @@ const CartPage: React.FC = () => {
     }
   }
 
-  const calculateDiscountedPrice = (price: number, discount: number) => {
-    return price * (1 - discount / 100)
-  }
-
   const calculateDiscountAmount = (price: number, discount: number) => {
     return price * (discount / 100)
   }
@@ -86,16 +82,16 @@ const CartPage: React.FC = () => {
     {
       title: 'Discount',
       render: (_, record: CartItem) => {
-        if (record.discount > 0) {
+        if (record.discountPercent > 0) {
           const discountAmount = calculateDiscountAmount(
             record.price,
-            record.discount
+            record.discountPercent
           )
           return (
             <div>
               <Text type='danger'>-${discountAmount.toFixed(2)}</Text>
               <Tag color='red' className='ml-2'>
-                {record.discount}%
+                {record.discountPercent}%
               </Tag>
             </div>
           )
@@ -119,11 +115,7 @@ const CartPage: React.FC = () => {
     {
       title: 'Subtotal',
       render: (_, record: CartItem) => {
-        const discountedPrice = calculateDiscountedPrice(
-          record.price,
-          record.discount
-        )
-        const subtotal = discountedPrice * record.quantity
+        const subtotal = record.discountPrice * record.quantity
         return <Text strong>${subtotal.toFixed(2)}</Text>
       },
     },
