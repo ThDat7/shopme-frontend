@@ -2,6 +2,7 @@ import { Box, Typography, Button, Alert } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import paymentService from '../../services/paymentService'
+import orderService from '../../services/orderService'
 import Dialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
@@ -19,10 +20,12 @@ import { ROUTES } from '../../config/appConfig'
 const BankPayment = ({
   checkoutResponse,
   isCheckout,
+  onCancel,
   toast,
 }: {
   checkoutResponse: any
   isCheckout: boolean
+  onCancel: () => void
   toast: any
 }) => {
   const navigate = useNavigate()
@@ -250,6 +253,30 @@ const BankPayment = ({
           </Typography>
         </Button>
       </Box>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby='alert-dialog-title'
+        aria-describedby='alert-dialog-description'
+      >
+        <DialogTitle id='alert-dialog-title' className='self-center'>
+          {'Huỷ bỏ đơn hàng'}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText
+            id='alert-dialog-description'
+            sx={{ color: 'text.primary' }}
+          >
+            Bạn có chắc muốn huỷ đơn hàng hay không?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Huỷ bỏ</Button>
+          <Button onClick={onCancel} autoFocus>
+            Xác nhận
+          </Button>
+        </DialogActions>
+      </Dialog>
       {/*Dialog for Qr Code*/}
       <Dialog open={openQR} onClose={() => setOpenQR(false)}>
         <Box

@@ -35,6 +35,7 @@ export const ROUTES = {
   CART: '/cart',
   CHECKOUT: '/checkout',
   PAYMENT: '/payment',
+  PAYMENT_RESULT: '/payment/result',
   ADDRESSES: '/addresses',
   ADDRESS_NEW: '/addresses/new',
   ADDRESS_EDIT: '/addresses/edit/:id',
