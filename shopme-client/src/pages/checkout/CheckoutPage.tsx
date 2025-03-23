@@ -15,7 +15,7 @@ import {
   Divider,
   Space,
 } from 'antd'
-import { PaymentMethod } from '../../types/checkout'
+import { PaymentMethod, PaymentMethodResponse } from '../../types/payment'
 import { usePayOS, PayOSConfig } from '@payos/payos-checkout'
 import { ROUTES } from '../../config/appConfig'
 import checkoutService from '../../services/checkoutService'
@@ -38,13 +38,29 @@ const CheckoutPage: React.FC = () => {
   const [selectedAddress, setSelectedAddress] = useState<AddressDetail | null>(
     null
   )
-  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([])
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('')
+  const [selectedPaymentMethod, setSelectedPaymentMethod] =
+    useState<PaymentMethod | null>(null)
   const [shippingCost, setShippingCost] = useState(0)
   const [cartItems, setCartItems] = useState<CartItem[]>([])
   const [selectedItems, setSelectedItems] = useState<number[]>([])
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
+
+  // Hardcoded payment methods
+  const paymentMethods: PaymentMethodResponse[] = [
+    {
+      method: PaymentMethod.COD,
+      displayName: 'Thanh toán khi nhận hàng',
+      description: 'Thanh toán bằng tiền mặt khi nhận hàng',
+      icon: '/icons/cod.png',
+    },
+    {
+      method: PaymentMethod.PAY_OS,
+      displayName: 'Thanh toán qua PayOS',
+      description: 'Thanh toán qua ví điện tử hoặc chuyển khoản ngân hàng',
+      icon: '/icons/payos.png',
+    },
+  ]
 
   // PayOS configuration
   const payOSConfig: PayOSConfig = {
@@ -64,11 +80,10 @@ const CheckoutPage: React.FC = () => {
     },
   }
 
-  const { open, exit } = usePayOS(payOSConfig)
+  // const { open, exit } = usePayOS(payOSConfig)
 
   useEffect(() => {
     loadCartItems()
-    loadPaymentMethods()
   }, [])
 
   useEffect(() => {
@@ -103,15 +118,6 @@ const CheckoutPage: React.FC = () => {
     }
   }
 
-  const loadPaymentMethods = async () => {
-    try {
-      const methods = await checkoutService.getPaymentMethods()
-      setPaymentMethods(methods)
-    } catch (error) {
-      message.error('Failed to load payment methods')
-    }
-  }
-
   const calculateShipping = async () => {
     if (!selectedAddressId || selectedItems.length === 0) return
 
@@ -130,7 +136,7 @@ const CheckoutPage: React.FC = () => {
     setSelectedAddressId(addressId)
   }
 
-  const handlePaymentMethodSelect = (method: string) => {
+  const handlePaymentMethodSelect = (method: PaymentMethod) => {
     setSelectedPaymentMethod(method)
   }
 
@@ -162,41 +168,48 @@ const CheckoutPage: React.FC = () => {
   }
 
   const handlePlaceOrder = async () => {
-    if (
-      !selectedAddressId ||
-      !selectedPaymentMethod ||
-      selectedItems.length === 0
-    ) {
-      message.error(
-        'Please select address, payment method, and at least one item'
-      )
+    if (!selectedAddressId) {
+      message.error('Vui lòng chọn địa chỉ giao hàng')
+      return
+    }
+
+    if (!selectedPaymentMethod) {
+      message.error('Vui lòng chọn phương thức thanh toán')
+      return
+    }
+
+    if (selectedItems.length === 0) {
+      message.error('Vui lòng chọn sản phẩm')
       return
     }
 
     try {
-      if (selectedPaymentMethod === 'COD') {
-        const codRequest: PlaceOrderCODRequest = {
-          addressId: selectedAddressId,
-          cartItemIds: selectedItems,
-        }
-        await checkoutService.placeOrderCOD(codRequest)
-        message.success('Order placed successfully')
+      setLoading(true)
+      const request = {
+        addressId: selectedAddressId,
+        cartItemIds: selectedItems,
+        returnUrl: `${window.location.origin}${ROUTES.ORDER_COMPLETE}`,
+        cancelUrl: `${window.location.origin}${ROUTES.CHECKOUT}`,
+      }
+
+      if (selectedPaymentMethod === PaymentMethod.COD) {
+        await checkoutService.placeOrderCOD(request)
         navigate(ROUTES.ORDER_COMPLETE)
-      } else if (selectedPaymentMethod === 'PAY_OS') {
-        const payosRequest: PlaceOrderPayOSRequest = {
-          addressId: selectedAddressId,
-          cartItemIds: selectedItems,
-          returnUrl: `${window.location.origin}${ROUTES.ORDER_COMPLETE}`,
-          cancelUrl: window.location.href,
-        }
-        const response = await checkoutService.placeOrderPayOS(payosRequest)
-        // Update PayOS config with checkout URL
-        payOSConfig.CHECKOUT_URL = response.checkoutUrl
-        // Open PayOS checkout
-        open()
+      } else {
+        const response = await checkoutService.placeOrderPayOS(request)
+        navigate('/payment', {
+          state: {
+            checkoutResponse: response.data,
+            cartItems: cartItems.filter((item) =>
+              selectedItems.includes(item.productId)
+            ),
+          },
+        })
       }
     } catch (error) {
-      message.error('Failed to place order')
+      message.error('Đặt hàng thất bại')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -268,7 +281,7 @@ const CheckoutPage: React.FC = () => {
   )
 
   const renderPaymentSection = () => (
-    <Card title='Payment Method'>
+    <Card title='Phương thức thanh toán'>
       <Radio.Group
         onChange={(e) => handlePaymentMethodSelect(e.target.value)}
         value={selectedPaymentMethod}
@@ -285,12 +298,12 @@ const CheckoutPage: React.FC = () => {
                 {method.icon && (
                   <img
                     src={method.icon}
-                    alt={method.name}
+                    alt={method.displayName}
                     className='w-8 h-8'
                   />
                 )}
                 <div>
-                  <Text strong>{method.name}</Text>
+                  <Text strong>{method.displayName}</Text>
                   {method.description && (
                     <Text type='secondary' className='block'>
                       {method.description}
@@ -302,9 +315,6 @@ const CheckoutPage: React.FC = () => {
           ))}
         </div>
       </Radio.Group>
-      {selectedPaymentMethod === 'PAY_OS' && (
-        <div id='payos-checkout' className='mt-4' />
-      )}
     </Card>
   )
 

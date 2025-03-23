@@ -1,3 +1,5 @@
+import { PayOSCheckoutResponse } from './payment'
+
 export interface CalculateShippingRequest {
   addressId: number
   cartItemIds: number[]
@@ -29,5 +31,5 @@ export interface PlaceOrderPayOSRequest {
 }
 
 export interface PlaceOrderPayOSResponse {
-  checkoutUrl: string
+  data: PayOSCheckoutResponse
 }

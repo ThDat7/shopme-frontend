@@ -34,6 +34,7 @@ export const ROUTES = {
   LEAF_CATEGORIES: '/categories/leaf-categories',
   CART: '/cart',
   CHECKOUT: '/checkout',
+  PAYMENT: '/payment',
   ADDRESSES: '/addresses',
   ADDRESS_NEW: '/addresses/new',
   ADDRESS_EDIT: '/addresses/edit/:id',
