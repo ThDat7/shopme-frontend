@@ -16,6 +16,7 @@ import './App.css'
 import LoginForm from './components/authentication/LoginForm'
 import CartPage from './pages/cart/CartPage'
 import CheckoutPage from './pages/checkout/CheckoutPage'
+import PaymentPage from './pages/payment/PaymentPage'
 
 const App: React.FC = () => {
   return (
@@ -34,7 +35,7 @@ const App: React.FC = () => {
             <Route path='/addresses' element={<AddressListPage />} />
             <Route path='/addresses/new' element={<AddressNewPage />} />
             <Route path='/addresses/edit/:id' element={<AddressEditPage />} />
-            {/* Other routes will be added here */}
+            <Route path='/payment' element={<PaymentPage />} />
             <Route path='/login' element={<LoginForm />} />
           </Route>
         </Routes>
