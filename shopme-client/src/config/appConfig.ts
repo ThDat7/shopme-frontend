@@ -38,6 +38,7 @@ export const ROUTES = {
   PAYMENT: '/payment',
   PAYMENT_RESULT: '/payment/result',
   ORDERS: '/orders',
+  ORDER_DETAIL: '/orders/:id',
   ADDRESSES: '/addresses',
   ADDRESS_NEW: '/addresses/new',
   ADDRESS_EDIT: '/addresses/edit/:id',

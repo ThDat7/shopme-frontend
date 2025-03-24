@@ -4,6 +4,7 @@ import {
   OrderStatus,
   GetOrdersParams,
   OrderListResponse,
+  OrderDetailResponse,
 } from '../types/order'
 
 class OrderService extends BaseService {
@@ -18,6 +19,18 @@ class OrderService extends BaseService {
       return this.handleError(error)
     }
   }
+
+  async getOrderById(orderId: number) {
+    try {
+      const response = await this.get<OrderDetailResponse>(
+        `${API_ENDPOINTS.ORDERS}/${orderId}`
+      )
+      return response.result
+    } catch (error) {
+      return this.handleError(error)
+    }
+  }
+
   async getOrderStatus(orderId: number) {
     try {
       const response = await this.get<OrderStatus>(

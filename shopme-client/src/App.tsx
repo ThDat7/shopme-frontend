@@ -19,6 +19,7 @@ import CheckoutPage from './pages/checkout/CheckoutPage'
 import PaymentPage from './pages/payment/PaymentPage'
 import PaymentResultPage from './pages/payment/PaymentResultPage'
 import OrdersPage from './pages/order/OrdersPage'
+import OrderDetailPage from './pages/order/OrderDetailPage'
 
 const App: React.FC = () => {
   return (
@@ -40,6 +41,7 @@ const App: React.FC = () => {
             <Route path='/payment' element={<PaymentPage />} />
             <Route path='/payment/result' element={<PaymentResultPage />} />
             <Route path='/orders' element={<OrdersPage />} />
+            <Route path='/orders/:id' element={<OrderDetailPage />} />
             <Route path='/login' element={<LoginForm />} />
           </Route>
         </Routes>

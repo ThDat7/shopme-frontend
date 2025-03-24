@@ -1,4 +1,5 @@
 import { PaginationParams } from './commonTypes'
+import { PaymentMethod } from './payment'
 
 export enum OrderStatus {
   NEW = 'NEW',
@@ -9,6 +10,53 @@ export enum OrderStatus {
   DELIVERED = 'DELIVERED',
   CANCELLED = 'CANCELLED',
   REFUNDED = 'REFUNDED',
+}
+
+export interface OrderTrack {
+  id: number
+  status: OrderStatus
+  notes: string
+  updatedTime: string
+}
+
+export interface ShippingAddress {
+  firstName: string
+  lastName: string
+  phone: string
+  address: string
+  city: string
+  country: string
+}
+
+export interface OrderItem {
+  id: number
+  productName: string
+  productMainImage: string
+  quantity: number
+  unitPrice: number
+}
+
+export interface GetOrdersParams extends PaginationParams {
+  status?: OrderStatus
+}
+
+export interface OrderListResponse {
+  id: number
+  status: OrderStatus
+  totalPrice: number
+  createdAt: Date
+  paymentMethod: PaymentMethod
+}
+
+export interface OrderDetailResponse {
+  id: number
+  status: OrderStatus
+  paymentMethod: PaymentMethod
+  createdAt: Date
+  totalPrice: number
+  shippingAddress: ShippingAddress
+  orderItems: OrderItem[]
+  orderTracks: OrderTrack[]
 }
 
 export const ORDER_STATUS_MAP: Record<
