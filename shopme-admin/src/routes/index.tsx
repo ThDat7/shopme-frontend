@@ -12,6 +12,7 @@ import CreateProduct from '../pages/products/CreateProduct'
 import EditProduct from '../pages/products/EditProduct'
 import SettingRoutes from './SettingRoutes'
 import LocationRoutes from './locationRoutes'
+import OrderRoutes from './orderRoutes'
 
 const AppRoutes: React.FC = () => {
   return (
@@ -86,6 +87,14 @@ const AppRoutes: React.FC = () => {
         element={
           <ProtectedRoute>
             <LocationRoutes />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path='/orders/*'
+        element={
+          <ProtectedRoute>
+            <OrderRoutes />
           </ProtectedRoute>
         }
       />

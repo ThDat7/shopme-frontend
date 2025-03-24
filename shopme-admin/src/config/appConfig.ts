@@ -11,6 +11,7 @@ export const API_ENDPOINTS = {
   LOCATIONS_COUNTRIES: '/countries',
   LOCATIONS_STATES: '/states',
   SHIPPING_RATES: '/shipping-rates',
+  ORDERS: '/orders',
 }
 
 export const APP_CONFIG = {
@@ -55,4 +56,7 @@ export const ROUTES = {
   SHIPPING_RATES: '/shipping-rates',
   SHIPPING_RATES_NEW: '/shipping-rates/new',
   SHIPPING_RATES_EDIT: '/shipping-rates/edit/:id',
+
+  ORDERS: '/orders',
+  ORDERS_DETAIL: '/orders/:id',
 }
