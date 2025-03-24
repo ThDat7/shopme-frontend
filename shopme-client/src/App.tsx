@@ -18,6 +18,7 @@ import CartPage from './pages/cart/CartPage'
 import CheckoutPage from './pages/checkout/CheckoutPage'
 import PaymentPage from './pages/payment/PaymentPage'
 import PaymentResultPage from './pages/payment/PaymentResultPage'
+import OrdersPage from './pages/order/OrdersPage'
 
 const App: React.FC = () => {
   return (
@@ -38,6 +39,7 @@ const App: React.FC = () => {
             <Route path='/addresses/edit/:id' element={<AddressEditPage />} />
             <Route path='/payment' element={<PaymentPage />} />
             <Route path='/payment/result' element={<PaymentResultPage />} />
+            <Route path='/orders' element={<OrdersPage />} />
             <Route path='/login' element={<LoginForm />} />
           </Route>
         </Routes>

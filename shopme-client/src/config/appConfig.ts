@@ -8,6 +8,7 @@ export const API_ENDPOINTS = {
   ADDRESSES: '/addresses',
   COUNTRIES: '/countries',
   CHECKOUT: '/checkout',
+  ORDERS: '/orders',
 }
 
 export const APP_CONFIG = {
@@ -36,6 +37,7 @@ export const ROUTES = {
   CHECKOUT: '/checkout',
   PAYMENT: '/payment',
   PAYMENT_RESULT: '/payment/result',
+  ORDERS: '/orders',
   ADDRESSES: '/addresses',
   ADDRESS_NEW: '/addresses/new',
   ADDRESS_EDIT: '/addresses/edit/:id',

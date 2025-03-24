@@ -1,10 +1,23 @@
 import { BaseService } from './baseService'
 import { API_ENDPOINTS } from '../config/appConfig'
 import {
-  OrderStatus
+  OrderStatus,
+  GetOrdersParams,
+  OrderListResponse,
 } from '../types/order'
 
 class OrderService extends BaseService {
+  async getOrders(params: GetOrdersParams) {
+    try {
+      const response = await this.getPaginated<OrderListResponse>(
+        `${API_ENDPOINTS.ORDERS}`,
+        params
+      )
+      return response.result
+    } catch (error) {
+      return this.handleError(error)
+    }
+  }
   async getOrderStatus(orderId: number) {
     try {
       const response = await this.get<OrderStatus>(
