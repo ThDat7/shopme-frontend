@@ -4,9 +4,15 @@ import { PaginationParams } from './commonTypes'
 export interface ProductListResponse {
   id: number
   name: string
+  mainImage: string
+
   price: number
   discountPercent: number
-  mainImage: string
+  discountPrice: number
+
+  averageRating: number
+  reviewCount: number
+  saleCount: number
 }
 
 export interface ProductDetailResponse {
@@ -41,4 +47,27 @@ export interface ProductListParams extends PaginationParams {
   keyword?: string
   minPrice?: number
   maxPrice?: number
+  categoryId?: number
+  brandId?: number
+  rating?: number
+  inStock?: boolean
+  sortBy?: 'price' | 'name' | 'rating' | 'createdAt' | 'soldCount'
+  sortDirection?: 'asc' | 'desc'
+  type?: 'best-seller' | 'trending' | 'top-rated' | 'discounted'
+}
+
+export enum ProductFilterType {
+  ALL = 'all',
+  BEST_SELLER = 'bestSeller',
+  TRENDING = 'trending',
+  HIGH_RATED = 'highRated',
+  DISCOUNTED = 'discounted',
+}
+
+export const PRODUCT_TYPE_LABELS: Record<ProductFilterType, string> = {
+  [ProductFilterType.ALL]: 'Tất cả sản phẩm',
+  [ProductFilterType.BEST_SELLER]: 'Sản phẩm bán chạy',
+  [ProductFilterType.TRENDING]: 'Đang thịnh hành',
+  [ProductFilterType.HIGH_RATED]: 'Đánh giá cao',
+  [ProductFilterType.DISCOUNTED]: 'Giảm giá sốc',
 }
