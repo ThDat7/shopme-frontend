@@ -1,14 +1,16 @@
-export const API_BASE_URL = 'http://localhost/api/v1'
+export const API_BASE_URL = 'http://localhost'
 
 export const API_ENDPOINTS = {
-  PRODUCTS: '/products',
-  CATEGORIES: '/categories',
-  AUTH: '/auth',
-  CART: '/cart',
-  ADDRESSES: '/addresses',
-  COUNTRIES: '/countries',
-  CHECKOUT: '/checkout',
-  ORDERS: '/orders',
+  PRODUCTS: '/api/v1/products',
+  CATEGORIES: '/api/v1/categories',
+  AUTH: '/api/v1/auth',
+  CART: '/api/v1/cart',
+  ADDRESSES: '/api/v1/addresses',
+  COUNTRIES: '/api/v1/countries',
+  CHECKOUT: '/api/v1/checkout',
+  ORDERS: '/api/v1/orders',
+  TEST: '/test-env',
+  CUSTOMERS: '/api/v1/customers',
 }
 
 export const APP_CONFIG = {
@@ -42,4 +44,10 @@ export const ROUTES = {
   ADDRESSES: '/addresses',
   ADDRESS_NEW: '/addresses/new',
   ADDRESS_EDIT: '/addresses/edit/:id',
+  LOGIN: '/login',
+  REGISTER: '/register',
+  EMAIL_VERIFICATION: '/verify-email',
+  CUSTOMER_INFO: '/customer-info',
+  PROFILE: '/profile',
+  FORGOT_PASSWORD: '/forgot-password',
 }

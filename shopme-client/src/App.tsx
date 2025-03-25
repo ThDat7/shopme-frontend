@@ -1,7 +1,7 @@
 // src/App.tsx
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import { ConfigProvider } from 'antd'
+import { ConfigProvider, Spin } from 'antd'
 import Layout from './components/layout/Layout'
 import HomePage from './pages/home/HomePage'
 import CategoryPage from './pages/category/CategoryPage'
@@ -20,12 +20,14 @@ import PaymentPage from './pages/payment/PaymentPage'
 import PaymentResultPage from './pages/payment/PaymentResultPage'
 import OrdersPage from './pages/order/OrdersPage'
 import OrderDetailPage from './pages/order/OrderDetailPage'
+import ScrollToTop from './components/layout/ScrollToTop'
 
 const App: React.FC = () => {
   return (
     // <AuthProvider>
     <ConfigProvider theme={theme}>
       <Router>
+        <ScrollToTop />
         <Routes>
           <Route path='/' element={<Layout />}>
             <Route index element={<HomePage />} />
