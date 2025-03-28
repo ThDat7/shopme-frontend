@@ -1,9 +1,6 @@
 import { BaseService } from './baseService'
 import { API_ENDPOINTS } from '../config/appConfig'
-import {
-  CustomerRegister,
-  CustomerRegisterResponse,
-} from '../types/customer'
+import { CustomerRegister, CustomerRegisterResponse } from '../types/customer'
 
 class CustomerService extends BaseService {
   async register(data: CustomerRegister) {

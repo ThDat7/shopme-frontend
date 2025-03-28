@@ -6,6 +6,10 @@ export interface GoogleLoginRequest {
 
 export interface GoogleLoginResponse extends CustomerLoginResponse {}
 
+export interface CustomerLoginRequest {
+  email: string
+  password: string
+}
 
 export interface CustomerLoginResponse {
   customer: Customer

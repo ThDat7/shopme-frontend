@@ -1,18 +1,14 @@
-import {
-  LoginRequest,
-  LoginResponse,
-  GoogleLoginRequest,
-  CustomerInfo,
-} from '../types/auth'
+import { GoogleLoginRequest, GoogleLoginResponse } from '../types/auth'
 import { API_ENDPOINTS } from '../config/appConfig'
 import { BaseService } from './baseService'
 import axios from 'axios'
+import { CustomerLoginRequest, CustomerLoginResponse } from '../types/auth'
 
 class AuthService extends BaseService {
-  async login(data: LoginRequest) {
+  async loginWithGoogle(data: GoogleLoginRequest) {
     try {
-      const response = await this.post<LoginResponse>(
-        `${API_ENDPOINTS.AUTH}/login`,
+      const response = await this.post<GoogleLoginResponse>(
+        `${API_ENDPOINTS.AUTH}/google`,
         data
       )
       return response.result
@@ -21,11 +17,11 @@ class AuthService extends BaseService {
     }
   }
 
-  async loginWithGoogle(data: GoogleLoginRequest) {
+  async login(credentials: CustomerLoginRequest) {
     try {
-      const response = await this.post<LoginResponse>(
-        `${API_ENDPOINTS.AUTH}/google`,
-        data
+      const response = await this.post<CustomerLoginResponse>(
+        `${API_ENDPOINTS.AUTH}/login`,
+        credentials
       )
       return response.result
     } catch (error) {
@@ -45,41 +41,7 @@ class AuthService extends BaseService {
       localStorage.removeItem('token')
     }
   }
-
-  getToken(): string | null {
-    return localStorage.getItem('token')
-  }
-
-  setToken(token: string): void {
-    localStorage.setItem('token', token)
-  }
-
-  isAuthenticated(): boolean {
-    return !!this.getToken()
-  }
-
-  getCustomerInfo(): CustomerInfo | null {
-    const userInfo = localStorage.getItem('userInfo')
-    return userInfo ? JSON.parse(userInfo) : null
-  }
-
-  setupAxiosInterceptors() {
-    const token = localStorage.getItem('token')
-    if (token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
-    }
-
-    axios.interceptors.response.use(
-      (response) => response,
-      (error) => {
-        if (error.response?.status === 401) {
-          this.logout()
-          window.location.href = '/login'
-        }
-        return Promise.reject(error)
-      }
-    )
-  }
 }
 
-export default new AuthService()
+const authService = new AuthService()
+export default authService
