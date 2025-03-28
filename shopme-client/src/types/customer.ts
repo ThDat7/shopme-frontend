@@ -39,3 +39,15 @@ export interface CustomerRegister {
 
 export interface CustomerRegisterResponse extends CustomerLoginResponse {}
 
+export interface VerifyEmailRequest {
+  email: string
+  verificationCode: string
+}
+
+export interface VerifyEmailResponse {
+  verified: boolean
+}
+
+export interface ResendVerificationRequest {
+  email: string
+}
