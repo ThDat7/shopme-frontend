@@ -14,6 +14,7 @@ import { ToastContainer } from 'react-toastify'
 import theme from './theme/themeConfig'
 import './App.css'
 import LoginForm from './components/authentication/LoginForm'
+import RegisterPage from './components/authentication/RegisterPage'
 import CartPage from './pages/cart/CartPage'
 import CheckoutPage from './pages/checkout/CheckoutPage'
 import PaymentPage from './pages/payment/PaymentPage'
@@ -45,6 +46,7 @@ const App: React.FC = () => {
             <Route path='/orders' element={<OrdersPage />} />
             <Route path='/orders/:id' element={<OrderDetailPage />} />
             <Route path='/login' element={<LoginForm />} />
+            <Route path='/register' element={<RegisterPage />} />
           </Route>
         </Routes>
         <ToastContainer

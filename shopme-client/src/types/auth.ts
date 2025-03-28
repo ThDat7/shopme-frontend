@@ -1,28 +1,13 @@
-export interface LoginRequest {
-  email: string
-  password: string
-}
+import { Customer } from './customer'
 
 export interface GoogleLoginRequest {
   token: string
 }
 
-export interface LoginResponse {
+export interface GoogleLoginResponse extends CustomerLoginResponse {}
+
+
+export interface CustomerLoginResponse {
+  customer: Customer
   token: string
-  user: CustomerInfo
-}
-
-export interface CustomerInfo {
-  id: number
-  email: string
-  firstName: string
-  lastName: string
-  avatar?: string
-}
-
-export interface AuthState {
-  isAuthenticated: boolean
-  user: CustomerInfo | null
-  loading: boolean
-  error: string | null
 }
