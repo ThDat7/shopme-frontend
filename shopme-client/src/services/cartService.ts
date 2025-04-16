@@ -22,6 +22,11 @@ class CartService extends BaseService {
     await this.delete(`${API_ENDPOINTS.CART}/${productId}`)
   }
 
+  async syncCart(items: CartItemRequest[]): Promise<CartItem[]> {
+    const response = await this.post<CartItem[]>(`${API_ENDPOINTS.CART}/sync`, items)
+    return response.result
+  }
+
   getCartSummary(items: CartItem[]): {
     totalItems: number
     totalAmount: number

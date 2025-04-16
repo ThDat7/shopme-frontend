@@ -1,178 +1,288 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
-  Table,
-  Button,
-  InputNumber,
-  Empty,
   Card,
+  Button,
   Typography,
+  Table,
+  InputNumber,
   message,
+  Popconfirm,
+  Checkbox,
+  Empty,
+  Image,
   Tag,
 } from 'antd'
-import { DeleteOutlined } from '@ant-design/icons'
-import type { ColumnsType } from 'antd/es/table'
+import {
+  DeleteOutlined,
+  ShoppingOutlined,
+  ArrowRightOutlined,
+} from '@ant-design/icons'
+import { useCart } from '../../contexts/CartContext'
 import { CartItem } from '../../types/cart'
-import cartService from '../../services/cartService'
-import { useNavigate } from 'react-router-dom'
+import { useRoutes } from '../../hooks/useRoutes'
+import { ROUTES } from '../../config/appConfig'
+
 const { Title, Text } = Typography
 
 const CartPage: React.FC = () => {
-  const [cartItems, setCartItems] = useState<CartItem[]>([])
-  const [loading, setLoading] = useState(false)
-  const navigate = useNavigate()
-  const fetchCartItems = async () => {
-    try {
-      setLoading(true)
-      const items = await cartService.getCartItems()
-      setCartItems(items)
-    } catch (error) {
-      message.error('Failed to fetch cart items')
-    } finally {
-      setLoading(false)
-    }
-  }
+  const routes = useRoutes()
+  const {
+    cartItems,
+    loading,
+    selectedItems,
+    selectItem,
+    selectAllItems,
+    updateQuantity: updateCartItemQuantity,
+    removeFromCart: removeCartItem,
+    getSelectedTotalAmount,
+    getCartTotalAmount,
+    refreshCart
+  } = useCart()
+
+  const [selectAll, setSelectAll] = useState(false)
 
   useEffect(() => {
-    fetchCartItems()
+    // Refresh cart when component mounts
+    refreshCart()
   }, [])
 
-  const handleQuantityChange = async (productId: number, quantity: number) => {
-    try {
-      await cartService.updateQuantity({ productId, quantity })
-      fetchCartItems()
-    } catch (error) {
-      message.error('Failed to update quantity')
+  useEffect(() => {
+    // Kiểm tra nút tự động chọn
+    if (cartItems.length > 0 && selectedItems.length === cartItems.length) {
+      setSelectAll(true)
+    } else {
+      setSelectAll(false)
     }
+  }, [selectedItems, cartItems])
+
+  const handleQuantityChange = async (productId: number, quantity: number) => {
+    if (quantity < 1) return
+    await updateCartItemQuantity(productId, quantity)
   }
 
   const handleRemoveItem = async (productId: number) => {
-    try {
-      await cartService.removeFromCart(productId)
-      fetchCartItems()
-      message.success('Item removed from cart')
-    } catch (error) {
-      message.error('Failed to remove item')
+    await removeCartItem(productId)
+    message.success('Đã xóa sản phẩm khỏi giỏ hàng')
+  }
+
+  const handleSelectItem = (productId: number, checked: boolean) => {
+    selectItem(productId, checked)
+  }
+
+  const handleSelectAll = (checked: boolean) => {
+    setSelectAll(checked)
+    selectAllItems(checked)
+  }
+
+  const handleCheckout = () => {
+    if (selectedItems.length === 0) {
+      message.warning('Vui lòng chọn ít nhất một sản phẩm để thanh toán')
+      return
     }
+    routes.navigateTo(ROUTES.CHECKOUT)
   }
 
-  const calculateDiscountAmount = (price: number, discount: number) => {
-    return price * (discount / 100)
-  }
-
-  const columns: ColumnsType<CartItem> = [
+  const columns = [
     {
-      title: 'Product',
-      dataIndex: 'name',
-      render: (name: string, record: CartItem) => (
-        <div className='flex items-center gap-4'>
-          <img
+      title: (
+        <Checkbox
+          checked={selectAll}
+          onChange={(e) => handleSelectAll(e.target.checked)}
+          disabled={cartItems.length === 0}
+        />
+      ),
+      key: 'selection',
+      width: 50,
+      render: (record: CartItem) => (
+        <Checkbox
+          checked={selectedItems.includes(record.productId)}
+          onChange={(e) => handleSelectItem(record.productId, e.target.checked)}
+        />
+      ),
+    },
+    {
+      title: 'Sản phẩm',
+      key: 'product',
+      render: (record: CartItem) => (
+        <div className="flex items-center">
+          <Image
             src={record.mainImage}
-            alt={name}
-            className='w-16 h-16 object-cover rounded'
+            alt={record.name}
+            width={80}
+            height={80}
+            className="object-cover rounded mr-4"
+            preview={false}
           />
-          <Text>{name}</Text>
+          <div>
+            <Text 
+              strong 
+              className="block text-base hover:text-blue-500 cursor-pointer" 
+              onClick={() => routes.navigateTo(ROUTES.PRODUCT_DETAIL, { id: record.productId })}
+            >
+              {record.name}
+            </Text>
+            {record.discountPercent > 0 && (
+              <Tag color="red" className="mt-1">-{record.discountPercent}%</Tag>
+            )}
+          </div>
         </div>
       ),
     },
     {
-      title: 'Price',
+      title: 'Đơn giá',
       dataIndex: 'price',
-      render: (price: number) => <Text>${price.toFixed(2)}</Text>,
+      key: 'price',
+      render: (_: number, record: CartItem) => (
+        <div>
+          <Text strong className="text-red-500 block">
+            {record.discountPrice.toLocaleString('vi-VN')}₫
+          </Text>
+          {record.discountPercent > 0 && (
+            <Text type="secondary" className="line-through text-xs">
+              {record.price.toLocaleString('vi-VN')}₫
+            </Text>
+          )}
+        </div>
+      ),
     },
     {
-      title: 'Discount',
-      render: (_, record: CartItem) => {
-        if (record.discountPercent > 0) {
-          const discountAmount = calculateDiscountAmount(
-            record.price,
-            record.discountPercent
-          )
-          return (
-            <div>
-              <Text type='danger'>-${discountAmount.toFixed(2)}</Text>
-              <Tag color='red' className='ml-2'>
-                {record.discountPercent}%
-              </Tag>
-            </div>
-          )
-        }
-        return <Text>-</Text>
-      },
-    },
-    {
-      title: 'Quantity',
-      dataIndex: 'quantity',
-      render: (quantity: number, record: CartItem) => (
+      title: 'Số lượng',
+      key: 'quantity',
+      render: (record: CartItem) => (
         <InputNumber
           min={1}
-          value={quantity}
+          max={99}
+          value={record.quantity}
           onChange={(value) =>
-            handleQuantityChange(record.productId, value || 1)
+            handleQuantityChange(record.productId, value as number)
           }
+          className="w-16"
         />
       ),
     },
     {
-      title: 'Subtotal',
-      render: (_, record: CartItem) => {
-        const subtotal = record.discountPrice * record.quantity
-        return <Text strong>${subtotal.toFixed(2)}</Text>
-      },
+      title: 'Thành tiền',
+      key: 'total',
+      render: (record: CartItem) => (
+        <Text strong className="text-red-500">
+          {(record.discountPrice * record.quantity).toLocaleString('vi-VN')}₫
+        </Text>
+      ),
     },
     {
-      title: 'Action',
+      title: '',
       key: 'action',
-      render: (_, record: CartItem) => (
-        <Button
-          type='text'
-          danger
-          icon={<DeleteOutlined />}
-          onClick={() => handleRemoveItem(record.productId)}
-        />
+      render: (record: CartItem) => (
+        <Popconfirm
+          title="Xóa sản phẩm"
+          description="Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?"
+          onConfirm={() => handleRemoveItem(record.productId)}
+          okText="Có"
+          cancelText="Không"
+        >
+          <Button
+            type="text"
+            danger
+            icon={<DeleteOutlined />}
+            className="flex items-center"
+          >
+            Xóa
+          </Button>
+        </Popconfirm>
       ),
     },
   ]
 
-  const { totalItems, totalAmount } = cartService.getCartSummary(cartItems)
+  const renderEmptyCart = () => (
+    <Card className="shadow-sm rounded-lg">
+      <Empty
+        image={Empty.PRESENTED_IMAGE_SIMPLE}
+        description={
+          <span className="text-gray-500">Giỏ hàng của bạn đang trống</span>
+        }
+      >
+        <Button
+          type="primary"
+          icon={<ShoppingOutlined />}
+          onClick={() => routes.navigateTo(ROUTES.PRODUCTS)}
+        >
+          Mua sắm ngay
+        </Button>
+      </Empty>
+    </Card>
+  )
+
+  const renderCartSummary = () => (
+    <Card className="shadow-sm rounded-lg">
+      <div className="space-y-4">
+        <div className="flex justify-between items-center">
+          <Text>Tổng tiền hàng:</Text>
+          <Text strong>{getCartTotalAmount().toLocaleString('vi-VN')}₫</Text>
+        </div>
+
+        <div className="flex justify-between items-center">
+          <Text>Đã chọn:</Text>
+          <Text>{selectedItems.length} sản phẩm</Text>
+        </div>
+
+        <div className="flex justify-between items-center">
+          <Text strong>Tổng thanh toán:</Text>
+          <Text strong className="text-xl text-red-500">
+            {getSelectedTotalAmount().toLocaleString('vi-VN')}₫
+          </Text>
+        </div>
+
+        <Button
+          type="primary"
+          size="large"
+          block
+          onClick={handleCheckout}
+          disabled={selectedItems.length === 0}
+          className="mt-4"
+          icon={<ArrowRightOutlined />}
+        >
+          Thanh toán ({selectedItems.length})
+        </Button>
+
+        <Button
+          block
+          onClick={() => routes.navigateTo(ROUTES.PRODUCTS)}
+          className="mt-2"
+        >
+          Tiếp tục mua sắm
+        </Button>
+      </div>
+    </Card>
+  )
 
   return (
-    <div className='container mx-auto px-4 py-8'>
-      <Title level={2}>Shopping Cart</Title>
+    <div className="container mx-auto py-8 px-4">
+      <Title level={2} className="mb-6">Giỏ hàng của bạn</Title>
 
-      {cartItems.length === 0 ? (
-        <Empty description='Your cart is empty' className='my-8'>
-          <Button type='primary' href='/'>
-            Continue Shopping
-          </Button>
-        </Empty>
+      {loading ? (
+        <div className="text-center py-8">Đang tải...</div>
+      ) : cartItems.length === 0 ? (
+        renderEmptyCart()
       ) : (
-        <>
-          <Table
-            columns={columns}
-            dataSource={cartItems}
-            rowKey='productId'
-            loading={loading}
-            pagination={false}
-          />
-
-          <Card className='mt-8'>
-            <div className='flex justify-between items-center'>
-              <div>
-                <Text>Total Items: {totalItems}</Text>
-                <Title level={3} className='mt-2'>
-                  Total Amount: ${totalAmount.toFixed(2)}
-                </Title>
-              </div>
-              <Button
-                type='primary'
-                size='large'
-                onClick={() => navigate('/checkout')}
-              >
-                Proceed to Checkout
-              </Button>
-            </div>
-          </Card>
-        </>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <Card className="shadow-sm rounded-lg overflow-x-auto">
+              <Table
+                columns={columns}
+                dataSource={cartItems}
+                rowKey="productId"
+                pagination={false}
+                loading={loading}
+                locale={{
+                  emptyText: 'Không có sản phẩm nào trong giỏ hàng',
+                }}
+              />
+            </Card>
+          </div>
+          <div className="lg:col-span-1">
+            {renderCartSummary()}
+          </div>
+        </div>
       )}
     </div>
   )
