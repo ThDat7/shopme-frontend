@@ -115,3 +115,90 @@ h6 {
 .ant-tabs-ink-bar {
   background: var(--primary-color);
 }
+
+/* Styles for product image carousel */
+.product-thumbnails-carousel .carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.product-thumbnails-carousel .carousel-arrow:hover {
+  background: rgba(0, 0, 0, 0.7);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.product-thumbnails-carousel .carousel-arrow.prev {
+  left: -12px;
+}
+
+.product-thumbnails-carousel .carousel-arrow.next {
+  right: -12px;
+}
+
+/* Đảm bảo tất cả các ảnh trong gallery có cùng kích thước và căn giữa */
+.ant-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.ant-image img {
+  object-fit: contain;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.ant-carousel .slick-slide {
+  padding: 0 4px;
+}
+
+/* Enhanced typography for product description */
+.product-description {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #333;
+}
+
+.product-description h1, 
+.product-description h2, 
+.product-description h3,
+.product-description h4,
+.product-description h5,
+.product-description h6 {
+  margin-top: 24px;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.product-description p {
+  margin-bottom: 16px;
+}
+
+.product-description ul,
+.product-description ol {
+  padding-left: 24px;
+  margin-bottom: 16px;
+}
+
+.product-description img {
+  max-width: 100%;
+  height: auto;
+  margin: 16px 0;
+  border-radius: 4px;
+}

@@ -1,10 +1,11 @@
 import axios, { AxiosInstance } from 'axios'
-import { API_BASE_URL, API_ENDPOINTS } from '../config/appConfig'
+import { API_BASE_URL } from '../config/appConfig'
 import {
   ApiResponse,
   PaginationParams,
   PaginationResponse,
 } from '../types/commonTypes'
+import { toast } from 'react-toastify'
 
 export class BaseService {
   protected api: AxiosInstance
@@ -15,6 +16,28 @@ export class BaseService {
       timeout: 10000,
       headers: {
         'Content-Type': 'application/json',
+      },
+      // Thêm paramsSerializer để đảm bảo mảng được serialize đúng cách
+      paramsSerializer: {
+        serialize: (params) => {
+          const searchParams = new URLSearchParams();
+          
+          // Xử lý đặc biệt cho mảng
+          for (const key in params) {
+            if (params[key] !== null && params[key] !== undefined) {
+              if (Array.isArray(params[key])) {
+                // Đối với mảng, chuyển thành chuỗi ngăn cách bởi dấu phẩy
+                if (params[key].length > 0) {
+                  searchParams.append(key, params[key].join(','));
+                }
+              } else {
+                searchParams.append(key, params[key]);
+              }
+            }
+          }
+          
+          return searchParams.toString();
+        },
       },
     })
     // Add request interceptor
@@ -61,6 +84,14 @@ export class BaseService {
     return this.api.post(url, data, config)
   }
 
+  // protected async post<R, T>(
+  //   url: string,
+  //   data: R,
+  //   config?: any
+  // ): Promise<ApiResponse<T>> {
+  //   return this.api.post(url, data, config)
+  // }
+
   protected async put<T>(
     url: string,
     data?: any,
@@ -83,11 +114,13 @@ export class BaseService {
   ): Promise<ApiResponse<PaginationResponse<T>>> {
     return this.api.get(url, { params, ...config })
   }
-
+  
   protected handleError(error: any): never {
+    let errorMessage = 'Đã xảy ra lỗi'
     if (error.response?.data?.message) {
-      throw new Error(error.response.data.message)
+      errorMessage = error.response.data.message
     }
-    throw new Error('An unexpected error occurred')
+    toast.error(errorMessage)
+    throw new Error(errorMessage)
   }
 }

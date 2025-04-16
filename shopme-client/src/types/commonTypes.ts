@@ -10,7 +10,7 @@ export interface PaginationParams {
   page?: number
   size?: number
   sortField?: string
-  sortDirection: 'asc' | 'desc'
+  sortDirection?: 'asc' | 'desc'
 }
 
 export interface PaginationResponse<T> {
