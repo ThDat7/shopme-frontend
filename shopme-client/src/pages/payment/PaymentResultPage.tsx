@@ -2,6 +2,7 @@ import React from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Result, Button } from 'antd'
 import { ROUTES } from '../../config/appConfig'
+import { useRoutes } from '../../hooks/useRoutes'
 
 type PaymentStatus = 'success' | 'failed' | 'cancelled'
 
@@ -14,6 +15,7 @@ interface PaymentResultState {
 const PaymentResultPage: React.FC = () => {
   const location = useLocation()
   const navigate = useNavigate()
+  const { createRoute } = useRoutes()
   const { status, orderCode, message } = location.state as PaymentResultState
 
   const getResultProps = () => {
@@ -55,11 +57,11 @@ const PaymentResultPage: React.FC = () => {
             <Button
               type='primary'
               key='orders'
-              onClick={() => navigate(ROUTES.ORDERS)}
+              onClick={() => navigate(createRoute(ROUTES.ORDERS))}
             >
               Xem đơn hàng
             </Button>,
-            <Button key='shop' onClick={() => navigate(ROUTES.HOME)}>
+            <Button key='shop' onClick={() => navigate(createRoute(ROUTES.HOME))}>
               Tiếp tục mua sắm
             </Button>,
           ]}

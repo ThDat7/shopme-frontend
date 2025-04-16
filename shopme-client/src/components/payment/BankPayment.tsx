@@ -1,5 +1,5 @@
-import { Box, Typography, Button, Alert } from '@mui/material'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
+import { Box, Typography, Button, Alert, Paper, Grid, Divider } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import paymentService from '../../services/paymentService'
 import orderService from '../../services/orderService'
@@ -12,30 +12,70 @@ import { CircularProgress } from 'react-cssfx-loading'
 import CheckIcon from '@mui/icons-material/Check'
 import DownloadIcon from '@mui/icons-material/Download'
 import ShareIcon from '@mui/icons-material/Share'
+import ContentCopyIcon from '@mui/icons-material/ContentCopy'
+import CancelIcon from '@mui/icons-material/Cancel'
 import { toJpeg } from 'html-to-image'
 import QRCode from 'antd/es/qr-code'
 import { VietQRBank } from '../../types/payment'
 import { ROUTES } from '../../config/appConfig'
 
-const BankPayment = ({
-  checkoutResponse,
-  isCheckout,
-  onCancel,
-  toast,
-}: {
-  checkoutResponse: any
+interface BankPaymentProps {
+  checkoutResponse: {
+    orderId?: number
+    orderCode?: number
+    checkoutUrl?: string
+    qrCode?: string
+    bin?: string
+    accountNumber?: string
+    accountName?: string
+    amount?: number
+    description?: string
+  }
   isCheckout: boolean
   onCancel: () => void
   toast: any
+}
+
+const BankPayment: React.FC<BankPaymentProps> = ({
+  checkoutResponse,
+  // isCheckout,
+  onCancel,
+  toast,
 }) => {
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
   const [openQR, setOpenQR] = useState(false)
   const [bank, setBank] = useState<VietQRBank | null>(null)
+  const [isConfirmBypass, setIsConfirmBypass] = useState(false)
+  const [countdown, setCountdown] = useState(900) // 15 phút = 900 giây
+  const qrRef = useRef<HTMLDivElement>(null)
+  // const isDevelopment = process.env.NODE_ENV === 'development'
+  const isDevelopment = true
+
+  useEffect(() => {
+    // Đếm ngược thời gian hết hạn QR
+    const timer = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer)
+          return 0
+        }
+        return prev - 1
+      })
+    }, 1000)
+
+    return () => clearInterval(timer)
+  }, [])
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+  }
 
   const handleCopyText = (textToCopy: string) => {
-    toast.success('Sao chép thành công')
     navigator.clipboard.writeText(textToCopy)
+    toast.success('Đã sao chép vào clipboard')
   }
 
   const handleClickOpen = () => {
@@ -45,277 +85,345 @@ const BankPayment = ({
   const handleClose = () => {
     setOpen(false)
   }
+
   const downloadQRCode = async () => {
-    var node = document.getElementById('my-node')
+    if (!qrRef.current) return
 
-    if (!node) return
-
-    toJpeg(node, { quality: 0.95 })
-      .then(function (dataUrl) {
-        // download(dataUrl, "my-node.png");
-        const link = document.createElement('a')
-        link.download = `${checkoutResponse.accountNumber}_${checkoutResponse.bin}_${checkoutResponse.amount}_${checkoutResponse.orderCode}_Qrcode.png`
-        link.href = dataUrl
-        link.click()
-        link.remove()
-      })
-      .catch(function (error) {
-        console.error('oops, something went wrong!', error)
-      })
+    try {
+      const dataUrl = await toJpeg(qrRef.current, { quality: 0.95 })
+      const link = document.createElement('a')
+      link.download = `QR_ThanhToan_${checkoutResponse.orderCode || checkoutResponse.orderId || 'order'}.png`
+      link.href = dataUrl
+      link.click()
+      toast.success('Đã tải mã QR thành công')
+    } catch (error) {
+      console.error('Lỗi khi tải mã QR:', error)
+      toast.error('Không thể tải mã QR, vui lòng thử lại')
+    }
   }
 
   useEffect(() => {
     async function getListBank() {
-      const res = await paymentService.getListBank()
-      const bank = res.filter((bank) => bank.bin === checkoutResponse.bin)
-      setBank(bank[0])
+      try {
+        const res = await paymentService.getListBank()
+        if (checkoutResponse?.bin) {
+          const bankFound = res.filter((b) => b.bin === checkoutResponse.bin)
+          if (bankFound.length > 0) {
+            setBank(bankFound[0])
+          }
+        }
+      } catch (error) {
+        console.error('Lỗi khi lấy danh sách ngân hàng:', error)
+      }
     }
 
-    if (!checkoutResponse?.bin) return
-    getListBank()
-  }, [])
+    if (checkoutResponse?.bin) {
+      getListBank()
+    }
+  }, [checkoutResponse])
 
+  const handleBypassPayment = async () => {
+    try {
+      if (!checkoutResponse.orderCode) return
+      
+      await orderService.bypassPayment(checkoutResponse.orderCode)
+      toast.success('Bypass payment thành công')
+      setIsConfirmBypass(false)
+      // Chuyển hướng đến trang thành công
+      navigate(ROUTES.PAYMENT_RESULT, {
+        state: {
+          status: 'success',
+          orderCode: checkoutResponse.orderCode,
+        },
+      })
+    } catch (error) {
+      console.error('Lỗi khi bypass payment:', error)
+      toast.error('Không thể bypass payment, vui lòng thử lại sau.')
+    }
+  }
 
   return (
-    <Box
-      component={'div'}
-      sx={{ flex: 3, borderWidth: 0.5, alignItems: 'center' }}
-      className='!border-gray-200 !border-solid rounded-2xl shadow p-5 !bg-gradient-to-r from-purple-300 to-blue-400 flex flex-col !w-full'
-    >
-      <Alert severity='warning' className='mb-4'>
-        <Typography className='!text-sm'>
+    <Paper elevation={3} className="p-6 rounded-lg">
+      <Alert severity="warning" className="mb-4" variant="outlined">
+        <Typography variant="body2">
           Lưu ý: Khi quét mã QR này, tiền sẽ được trừ trực tiếp từ tài khoản
           ngân hàng của bạn. Vui lòng kiểm tra kỹ thông tin trước khi thanh
           toán.
         </Typography>
       </Alert>
-      <Typography className='!text-xl !font-bold text-gray-700 pb-5'>
+      
+      <Typography variant="h6" className="font-bold mb-4">
         Thanh toán qua ngân hàng
       </Typography>
-      <Box
-        component={'div'}
-        className='flex lg:flex-row w-full gap-10 md:flex-col sm:flex-row flex-col'
-      >
-        <Box
-          component={'div'}
-          className='flex flex-row self-center w-8/12 xl:w-4/12 2xl:w-3/12'
-        >
-          <Button className='w-full h-full' onClick={() => setOpenQR(true)}>
-            <QRCode
-              value={checkoutResponse.qrCode}
-              level='M'
-              includeMargin={true}
-              // renderAs='svg'
-              fgColor={'#25174E'}
-              bgColor='transparent'
-              style={{ borderRadius: 10, width: '100%', height: '100%' }}
-              className='!bg-gradient-to-br from-green-200 via-purple-200 to-green-200'
-            />
-          </Button>
-        </Box>
-        <Box component={'div'} className='flex flex-col gap-5'>
-          <Box component={'div'} className='flex flex-row gap-2'>
-            <img src={bank?.logo} width={100} height={55} />
-            <Box component={'div'} className='flex flex-col'>
-              <Typography className='text-gray-900 text-opacity-70 !text-sm'>
-                Ngân hàng
-              </Typography>
-              <Typography className='text-gray-800 !text-sm !font-bold'>
-                {bank?.name}
-              </Typography>
-            </Box>
-          </Box>
-          <Box component={'div'} className='flex flex-col gap-2'>
-            <Box component={'div'} className='flex flex-row'>
-              <Box component={'div'} className='flex flex-col'>
-                <Typography className='text-gray-900 text-opacity-70 !text-sm'>
-                  Chủ tài khoản:
-                </Typography>
-                <Typography className='text-gray-800 !text-sm !font-bold'>
-                  {checkoutResponse.accountName}
-                </Typography>
-              </Box>
-            </Box>
-            <Box component={'div'} className='flex flex-row'>
-              <Box
-                component={'div'}
-                className='flex flex-col'
-                sx={{ flex: 11 }}
-              >
-                <Typography className='text-gray-900 text-opacity-70 !text-sm'>
-                  Số tài khoản :
-                </Typography>
-                <Typography className='text-gray-800 !text-sm !font-bold'>
-                  {checkoutResponse.accountNumber}
-                </Typography>
-              </Box>
-              <Button
-                variant='contained'
-                size='small'
-                className='h-7 !bg-purple-200 !object-right !ml-auto !my-auto'
-                sx={{ flex: 2 }}
-                onClick={() => handleCopyText(checkoutResponse.accountNumber)}
-              >
-                <Typography className='!text-xs !font-bold text-gray-600 normal-case'>
-                  Sao chép
-                </Typography>
-              </Button>
-            </Box>
-            <Box component={'div'} className='flex flex-row'>
-              <Box
-                component={'div'}
-                className='flex flex-col'
-                sx={{ flex: 11 }}
-              >
-                <Typography className='text-gray-900 text-opacity-70 !text-sm'>
-                  Số tiền :
-                </Typography>
-                <Typography className='text-gray-800 !text-sm !font-bold'>
-                  {checkoutResponse.amount} vnd
-                </Typography>
-              </Box>
-              <Button
-                variant='contained'
-                size='small'
-                className='h-7 !bg-purple-200 !object-right !ml-auto !my-auto'
-                sx={{ flex: 2 }}
-                onClick={() => handleCopyText(checkoutResponse.amount)}
-              >
-                <Typography className='!text-xs !font-bold text-gray-600 normal-case'>
-                  Sao chép
-                </Typography>
-              </Button>
-            </Box>
-            <Box component={'div'} className='flex flex-row'>
-              <Box
-                component={'div'}
-                className='flex flex-col'
-                sx={{ flex: 11 }}
-              >
-                <Typography className='text-gray-900 text-opacity-70 !text-sm'>
-                  Nội dung :
-                </Typography>
-                <Typography className='text-gray-800 !text-sm !font-bold '>
-                  {checkoutResponse.description}
-                </Typography>
-              </Box>
-              <Button
-                variant='contained'
-                size='small'
-                sx={{ flex: 2 }}
-                className='h-7 !bg-purple-200 !object-right !ml-auto !my-auto'
-                onClick={() => handleCopyText(checkoutResponse.description)}
-              >
-                <Typography className='!text-xs !font-bold text-gray-600 normal-case'>
-                  Sao chép
-                </Typography>
-              </Button>
-            </Box>
-          </Box>
-
-          <Typography className='!text-sm text-gray-700'>
-            Lưu ý : Nhập chính xác nội dung{' '}
-            <span className='!font-bold'>{checkoutResponse.description}</span>{' '}
-            khi chuyển khoản
-          </Typography>
-          <Box component={'div'} className='flex flex-row gap-5 items-center'>
-            {!isCheckout && (
-              <>
-                <CircularProgress color='gray' width='30px' height='30px' />
-                <Typography className='!text-lg text-gray-700'>
-                  Đơn hàng đang chờ được thanh toán
-                </Typography>
-              </>
-            )}
-            {isCheckout && (
-              <>
-                <CheckIcon width={30} height={30} color='success' />
-                <Typography className='!text-lg text-gray-700'>
-                  Đơn hàng đã được thanh toán thành công
-                </Typography>
-              </>
-            )}
-          </Box>
-        </Box>
+      
+      <Box className="mb-2 text-center">
+        <Typography variant="subtitle2" color="error" className="mb-2">
+          Mã QR sẽ hết hạn sau: <strong>{formatTime(countdown)}</strong>
+        </Typography>
       </Box>
-      <Typography className='!text-sm text-gray-700 p-5'>
-        Mở App Ngân hàng bất kỳ để quét mã VietQR hoặc chuyển khoản chính xác
-        nội dung bên trên
-      </Typography>
-      <Box component={'div'} className='flex flex-row gap-5 mt-4'>
-        <Button
-          variant='contained'
-          onClick={handleClickOpen}
-          className='!bg-white h-10'
-        >
-          <Typography className={'normal-case !font-bold text-gray-700'}>
-            Hủy thanh toán
-          </Typography>
-        </Button>
-      </Box>
+      
+      <Grid container spacing={3}>
+        {/* QR Code */}
+        <Grid item xs={12} md={5} className="flex flex-col items-center">
+          <Paper 
+            elevation={1} 
+            className="p-4 bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg mb-3"
+            ref={qrRef}
+            id="my-node"
+          >
+            <Typography variant="h6" className="mb-2 text-center">
+              Quét mã QR để thanh toán
+            </Typography>
+            
+            <Box className="relative">
+              <Alert severity="info" className="mb-3">
+                Mã QR có hiệu lực trong {formatTime(countdown)}
+              </Alert>
+              
+              <div className="flex flex-col items-center p-2 bg-white rounded-md">
+                {checkoutResponse.qrCode ? (
+                  <QRCode
+                    value={checkoutResponse.qrCode}
+                    level="M"
+                    size={200}
+                    bordered={false}
+                  />
+                ) : (
+                  <Box className="w-[200px] h-[200px] flex items-center justify-center">
+                    <CircularProgress color="#4f46e5" width="40px" height="40px" />
+                  </Box>
+                )}
+                
+                <Typography variant="caption" className="block text-center mt-2">
+                  Quét mã QR bằng ứng dụng ngân hàng để thanh toán
+                </Typography>
+              </div>
+            </Box>
+            
+            <Box className="flex gap-2 justify-center mt-3">
+              <Button 
+                variant="outlined" 
+                size="small" 
+                startIcon={<DownloadIcon />}
+                onClick={downloadQRCode}
+              >
+                Tải QR
+              </Button>
+              <Button 
+                variant="outlined" 
+                size="small" 
+                startIcon={<ShareIcon />}
+                onClick={() => setOpenQR(true)}
+              >
+                Phóng to
+              </Button>
+            </Box>
+          </Paper>
+        </Grid>
+        
+        {/* Thông tin chuyển khoản */}
+        <Grid item xs={12} md={7}>
+          <Paper elevation={1} className="p-4 rounded-lg">
+            {bank && (
+              <Box className="flex items-center mb-4">
+                <img 
+                  src={bank.logo} 
+                  alt={bank.name} 
+                  className="w-12 h-12 object-contain mr-3" 
+                />
+                <Box>
+                  <Typography variant="caption" color="textSecondary">
+                    Ngân hàng
+                  </Typography>
+                  <Typography variant="subtitle1" className="font-bold">
+                    {bank.name}
+                  </Typography>
+                </Box>
+              </Box>
+            )}
+            
+            <Divider className="my-3" />
+            
+            <Box className="space-y-3">
+              <Box>
+                <Typography variant="caption" color="textSecondary">
+                  Chủ tài khoản
+                </Typography>
+                <Typography variant="subtitle1" className="font-bold">
+                  {checkoutResponse.accountName || 'Đang tải...'}
+                </Typography>
+              </Box>
+              
+              <Box className="flex items-center justify-between">
+                <Box>
+                  <Typography variant="caption" color="textSecondary">
+                    Số tài khoản
+                  </Typography>
+                  <Typography variant="subtitle1" className="font-bold">
+                    {checkoutResponse.accountNumber || 'Đang tải...'}
+                  </Typography>
+                </Box>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  startIcon={<ContentCopyIcon />}
+                  onClick={() => handleCopyText(checkoutResponse.accountNumber || '')}
+                  disabled={!checkoutResponse.accountNumber}
+                >
+                  Sao chép
+                </Button>
+              </Box>
+              
+              <Box className="flex items-center justify-between">
+                <Box>
+                  <Typography variant="caption" color="textSecondary">
+                    Số tiền
+                  </Typography>
+                  <Typography variant="subtitle1" className="font-bold text-red-600">
+                    {checkoutResponse.amount?.toLocaleString('vi-VN') || 0}₫
+                  </Typography>
+                </Box>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  startIcon={<ContentCopyIcon />}
+                  onClick={() => handleCopyText(checkoutResponse.amount?.toString() || '')}
+                  disabled={!checkoutResponse.amount}
+                >
+                  Sao chép
+                </Button>
+              </Box>
+              
+              <Box>
+                <Typography variant="caption" color="textSecondary">
+                  Nội dung chuyển khoản
+                </Typography>
+                <Typography variant="subtitle1" className="font-bold">
+                  {checkoutResponse.description || `Thanh toan don hang #${checkoutResponse.orderCode || checkoutResponse.orderId}`}
+                </Typography>
+              </Box>
+            </Box>
+          </Paper>
+          
+          <Box className="mt-4 flex justify-between gap-2">
+            <Button
+              variant="outlined"
+              color="error"
+              size="small"
+              onClick={handleClickOpen}
+              startIcon={<CancelIcon />}
+            >
+              Hủy thanh toán
+            </Button>
+            
+            {isDevelopment && (
+              <Button
+                variant="contained"
+                color="success"
+                size="small"
+                onClick={() => setIsConfirmBypass(true)}
+                startIcon={<CheckIcon />}
+              >
+                Bypass (Dev)
+              </Button>
+            )}
+          </Box>
+        </Grid>
+      </Grid>
+      
+      {/* Dialog xác nhận hủy */}
       <Dialog
         open={open}
         onClose={handleClose}
-        aria-labelledby='alert-dialog-title'
-        aria-describedby='alert-dialog-description'
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id='alert-dialog-title' className='self-center'>
-          {'Huỷ bỏ đơn hàng'}
+        <DialogTitle id="alert-dialog-title">
+          Xác nhận hủy thanh toán
         </DialogTitle>
         <DialogContent>
-          <DialogContentText
-            id='alert-dialog-description'
-            sx={{ color: 'text.primary' }}
-          >
-            Bạn có chắc muốn huỷ đơn hàng hay không?
+          <DialogContentText id="alert-dialog-description">
+            Bạn có chắc chắn muốn hủy thanh toán này? Đơn hàng của bạn sẽ bị hủy.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Huỷ bỏ</Button>
-          <Button onClick={onCancel} autoFocus>
-            Xác nhận
+          <Button onClick={handleClose} color="primary">
+            Không
+          </Button>
+          <Button onClick={onCancel} color="error" autoFocus>
+            Hủy thanh toán
           </Button>
         </DialogActions>
       </Dialog>
-      {/*Dialog for Qr Code*/}
-      <Dialog open={openQR} onClose={() => setOpenQR(false)}>
-        <Box
-          component={'div'}
-          className='p-20 flex flex-col justify-center items-center gap-5'
-        >
-          <Typography className='text-center'>
-            Mở App Ngân hàng bất kỳ để quét mã VietQR
-          </Typography>
-          <QRCode
-            id='my-node'
-            value={checkoutResponse.qrCode}
-            level='M'
-            includeMargin={true}
-            fgColor={'#25174E'}
-            bgColor='transparent'
-            style={{ borderRadius: 10, width: '100%', height: '100%' }}
-            className='!bg-gradient-to-br from-green-200 via-purple-200 to-green-200'
-          />
-          <Box component={'div'} className='flex flex-row gap-10 pt-10'>
-            <Button
-              variant='outlined'
-              startIcon={<DownloadIcon />}
-              color='inherit'
-              onClick={downloadQRCode}
-            >
-              <Typography className='normal-case'>Tải xuống</Typography>
-            </Button>
-            <Button
-              variant='outlined'
-              color='inherit'
-              startIcon={<ShareIcon />}
-            >
-              <Typography className='normal-case'>Chia sẻ</Typography>
-            </Button>
-          </Box>
-        </Box>
+      
+      {/* Dialog xác nhận bypass */}
+      <Dialog
+        open={isConfirmBypass}
+        onClose={() => setIsConfirmBypass(false)}
+        aria-labelledby="bypass-dialog-title"
+        aria-describedby="bypass-dialog-description"
+      >
+        <DialogTitle id="bypass-dialog-title">
+          Xác nhận bypass thanh toán
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="bypass-dialog-description">
+            Chức năng này chỉ dành cho môi trường phát triển. Bạn có chắc chắn muốn bypass thanh toán này?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setIsConfirmBypass(false)} color="primary">
+            Không
+          </Button>
+          <Button onClick={handleBypassPayment} color="success" autoFocus>
+            Bypass
+          </Button>
+        </DialogActions>
       </Dialog>
-    </Box>
+      
+      {/* Dialog phóng to QR */}
+      <Dialog
+        open={openQR}
+        onClose={() => setOpenQR(false)}
+        aria-labelledby="qr-dialog-title"
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle id="qr-dialog-title" className="text-center">
+          Mã QR thanh toán
+        </DialogTitle>
+        <DialogContent>
+          <Box className="flex flex-col items-center">
+            {checkoutResponse.qrCode ? (
+              <QRCode
+                value={checkoutResponse.qrCode}
+                level="M"
+                size={300}
+                style={{ margin: '0 auto' }}
+                bordered={false}
+              />
+            ) : (
+              <Box className="w-[300px] h-[300px] flex items-center justify-center">
+                <CircularProgress color="#4f46e5" width="50px" height="50px" />
+              </Box>
+            )}
+            
+            <Typography variant="body2" className="mt-4 text-center">
+              Quét mã QR này bằng ứng dụng ngân hàng để thanh toán số tiền{' '}
+              <strong>{checkoutResponse.amount?.toLocaleString('vi-VN')}₫</strong>
+            </Typography>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenQR(false)} color="primary">
+            Đóng
+          </Button>
+          <Button onClick={downloadQRCode} color="primary" startIcon={<DownloadIcon />}>
+            Tải xuống
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Paper>
   )
 }
 

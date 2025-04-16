@@ -1,3 +1,4 @@
+import React from 'react'
 import {
   Box,
   Typography,
@@ -7,44 +8,72 @@ import {
   TableRow,
   TableContainer,
   Table,
+  Paper,
+  Divider,
+  Chip,
 } from '@mui/material'
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ToastContainer, toast } from 'react-toastify'
-// import PaymentMethod from '../components/PaymentMethod'
+import 'react-toastify/dist/ReactToastify.css'
 import BankPayment from '../../components/payment/BankPayment'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { CartItem } from '../../types/cart'
 import orderService from '../../services/orderService'
 import { ROUTES } from '../../config/appConfig'
 import { OrderStatus } from '../../types/order'
+import { useRoutes } from '../../hooks/useRoutes'
+import { AddressDetail } from '../../types/address'
+import { PaymentMethod } from '../../types/payment'
 
-const Payment = () => {
-  const [selectedIndex, setSelectedIndex] = useState(0)
+interface PaymentPageState {
+  checkoutResponse: {
+    orderId: number
+    orderCode?: number
+    checkoutUrl: string
+    qrCode?: string
+    bin?: string
+    accountNumber?: string
+    accountName?: string
+    amount?: number
+    description?: string
+  }
+  cartItems: CartItem[]
+  totalAmount: number
+  shippingCost: number
+  paymentMethod: PaymentMethod
+  address: AddressDetail
+}
+
+const PaymentPage: React.FC = () => {
   const [isCheckout, setIsCheckout] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
-  const { checkoutResponse, cartItems } = location.state
-  const pollingInterval = useRef<ReturnType<typeof setInterval> | undefined>(
-    undefined
-  )
+  const { createRoute } = useRoutes()
+  const state = location.state as PaymentPageState
+  const { checkoutResponse, cartItems, totalAmount, shippingCost, address, paymentMethod } = state || {}
+  
+  const pollingInterval = useRef<ReturnType<typeof setInterval> | undefined>(undefined)
 
   useEffect(() => {
+    // Kiểm tra xem có dữ liệu thanh toán không
     if (!checkoutResponse || !checkoutResponse.orderCode) {
+      toast.error('Không tìm thấy thông tin thanh toán')
+      setTimeout(() => {
+        navigate(createRoute(ROUTES.CHECKOUT))
+      }, 3000)
       return
     }
 
-    // Start polling payment status
+    // Bắt đầu kiểm tra trạng thái thanh toán
     pollingInterval.current = setInterval(async () => {
       try {
-        const status = await orderService.getOrderStatus(
-          checkoutResponse.orderCode
-        )
+        const status = await orderService.getOrderStatus(checkoutResponse.orderCode as number)
         if (status === OrderStatus.PAID) {
           setIsCheckout(true)
           if (pollingInterval.current) {
             clearInterval(pollingInterval.current)
           }
-          navigate(ROUTES.PAYMENT_RESULT, {
+          navigate(createRoute(ROUTES.PAYMENT_RESULT), {
             state: {
               status: 'success',
               orderCode: checkoutResponse.orderCode,
@@ -54,7 +83,7 @@ const Payment = () => {
           if (pollingInterval.current) {
             clearInterval(pollingInterval.current)
           }
-          navigate(ROUTES.PAYMENT_RESULT, {
+          navigate(createRoute(ROUTES.PAYMENT_RESULT), {
             state: {
               status: 'cancelled',
               orderCode: checkoutResponse.orderCode,
@@ -64,7 +93,7 @@ const Payment = () => {
           if (pollingInterval.current) {
             clearInterval(pollingInterval.current)
           }
-          navigate(ROUTES.PAYMENT_RESULT, {
+          navigate(createRoute(ROUTES.PAYMENT_RESULT), {
             state: {
               status: 'failed',
               orderCode: checkoutResponse.orderCode,
@@ -75,9 +104,9 @@ const Payment = () => {
       } catch (error) {
         console.error('Failed to check payment status:', error)
       }
-    }, 5000) // Check every 5 seconds
+    }, 5000) // Kiểm tra mỗi 5 giây
 
-    // Cleanup polling on unmount
+    // Dừng kiểm tra khi component bị hủy
     return () => {
       if (pollingInterval.current) {
         clearInterval(pollingInterval.current)
@@ -87,11 +116,13 @@ const Payment = () => {
 
   const handleCancelPayment = async () => {
     try {
-      await orderService.cancelOrder(checkoutResponse.orderCode)
+      if (!checkoutResponse || !checkoutResponse.orderCode) return
+      
+      await orderService.cancelOrder(checkoutResponse.orderCode as number)
       if (pollingInterval.current) {
         clearInterval(pollingInterval.current)
       }
-      navigate(ROUTES.PAYMENT_RESULT, {
+      navigate(createRoute(ROUTES.PAYMENT_RESULT), {
         state: {
           status: 'cancelled',
           orderCode: checkoutResponse.orderCode,
@@ -103,91 +134,170 @@ const Payment = () => {
     }
   }
 
-  if (!checkoutResponse || !checkoutResponse.qrCode) {
-    return <Typography>Something went wrong!</Typography>
+  if (!state || !checkoutResponse) {
+    return (
+      <Box className="container mx-auto py-8 px-4 text-center">
+        <Typography variant="h5" className="mb-4">
+          Không tìm thấy thông tin thanh toán
+        </Typography>
+        <Typography className="mb-4">
+          Đang chuyển hướng trang thanh toán...
+        </Typography>
+        <ToastContainer />
+      </Box>
+    )
   }
 
   return (
-    <>
-      <Box
-        component={'div'}
-        className='!flex md:flex-row flex-col !flex-1 !m-10 gap-10'
-      >
-        <ToastContainer />
-
-        <Box
-          component={'div'}
-          sx={{ flex: 2, borderWidth: 1 }}
-          className='!border-gray-200 !border-solid rounded-2xl flex !flex-col shadow'
-        >
-          <Box
-            component={'div'}
-            sx={{ borderBottomStyle: 'dashed' }}
-            className=' w-full !h-20 border-gray-200 border-b'
-          >
-            <Typography className='!font-bold !text-2xl p-5'>
-              Thông tin đơn hàng
-            </Typography>
-          </Box>
-          <Box
-            component={'div'}
-            className='w-full p-5 flex flex-col gap-5 border-gray-200 border-b'
-            sx={{ borderBottomStyle: 'dashed' }}
-          >
-            <Typography className='!font-bold !text-xl'>
-              {`Mã đơn hàng: #${checkoutResponse.orderCode}`}
-            </Typography>
-            <TableContainer>
-              <Table aria-label='simple table' size='small' className='w-full'>
-                <TableHead>
-                  <TableRow>
-                    <TableCell align='center' className='!font-bold'>
-                      STT
-                    </TableCell>
-                    <TableCell align='center' className='!font-bold'>
-                      Tên
-                    </TableCell>
-                    <TableCell align='center' className='!font-bold'>
-                      Giá trị
-                    </TableCell>
-                    <TableCell align='center' className='!font-bold'>
-                      Số lượng
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {cartItems.map((item: CartItem, index: number) => (
-                    // re-handle it to full info
-                    <TableRow key={index}>
-                      <TableCell align='center'>{index + 1}</TableCell>
-                      <TableCell align='center'>{item.name}</TableCell>
-                      <TableCell align='center'>{item.price}</TableCell>
-                      <TableCell align='center'>{item.quantity}</TableCell>
+    <Box className="container mx-auto py-8 px-4">
+      <Typography variant="h4" className="mb-6 font-bold text-center">
+        Thanh toán đơn hàng
+      </Typography>
+      
+      <Box className="flex flex-col md:flex-row gap-6">
+        {/* Thông tin đơn hàng */}
+        <Box className="flex-1">
+          <Paper elevation={2} className="p-4 rounded-lg mb-6">
+            <Box className="flex justify-between items-center mb-4 pb-3 border-b">
+              <Typography variant="h6" className="font-bold">
+                Thông tin đơn hàng
+              </Typography>
+              <Chip 
+                label={`Mã đơn hàng: #${checkoutResponse.orderCode || checkoutResponse.orderId}`} 
+                color="primary" 
+                variant="outlined"
+              />
+            </Box>
+            
+            <Box className="mb-4">
+              <Typography variant="subtitle1" className="font-bold mb-2">
+                Sản phẩm
+              </Typography>
+              <TableContainer component={Paper} variant="outlined" className="mb-4">
+                <Table size="small">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>STT</TableCell>
+                      <TableCell>Tên sản phẩm</TableCell>
+                      <TableCell align="right">Giá</TableCell>
+                      <TableCell align="right">SL</TableCell>
+                      <TableCell align="right">Thành tiền</TableCell>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <Typography className='!font-bold !ml-auto'>
-              {`Tổng tiền: ${checkoutResponse.amount.toLocaleString()}đ`}
-            </Typography>
-          </Box>
-          <Box
-            component={'div'}
-            className='w-full p-5 flex flex-col gap-5 border-gray-200 border-b'
-            sx={{ borderBottomStyle: 'dashed' }}
-          ></Box>
+                  </TableHead>
+                  <TableBody>
+                    {cartItems.map((item: CartItem, index: number) => (
+                      <TableRow key={index}>
+                        <TableCell>{index + 1}</TableCell>
+                        <TableCell>{item.name}</TableCell>
+                        <TableCell align="right">{item.discountPrice}₫</TableCell>
+                        <TableCell align="right">{item.quantity}</TableCell>
+                        <TableCell align="right">{(item.discountPrice * item.quantity)}₫</TableCell>
+                      </TableRow>
+                    ))}
+                    <TableRow>
+                      <TableCell colSpan={3} />
+                      <TableCell align="right">
+                        <Typography variant="subtitle2">Tạm tính:</Typography>
+                      </TableCell>
+                      <TableCell align="right">
+                        <Typography variant="subtitle2">
+                          {(totalAmount - shippingCost)}₫
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell colSpan={3} />
+                      <TableCell align="right">
+                        <Typography variant="subtitle2">Phí vận chuyển:</Typography>
+                      </TableCell>
+                      <TableCell align="right">
+                        <Typography variant="subtitle2">
+                          {shippingCost}₫
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell colSpan={3} />
+                      <TableCell align="right">
+                        <Typography variant="subtitle1" className="font-bold">
+                          Tổng cộng:
+                        </Typography>
+                      </TableCell>
+                      <TableCell align="right">
+                        <Typography variant="subtitle1" className="font-bold text-red-600">
+                          {totalAmount}₫
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Box>
+            
+            <Divider className="my-4" />
+            
+            <Box className="mb-4">
+              <Typography variant="subtitle1" className="font-bold mb-2">
+                Địa chỉ giao hàng
+              </Typography>
+              <Paper variant="outlined" className="p-3">
+                <Typography variant="body1" className="font-bold">
+                  {`${address.firstName} ${address.lastName}`}
+                </Typography>
+                <Typography variant="body2">
+                  {address.phoneNumber}
+                </Typography>
+                <Typography variant="body2">
+                  {address.addressLine}
+                </Typography>
+                <Typography variant="body2">
+                  {`${address.wardId || ''} ${address.districtId ? ', ' + address.districtId : ''} ${address.provinceId ? ', ' + address.provinceId : ''}`}
+                </Typography>
+              </Paper>
+            </Box>
+            
+            <Divider className="my-4" />
+            
+            <Box>
+              <Typography variant="subtitle1" className="font-bold mb-2">
+                Phương thức thanh toán
+              </Typography>
+              <Chip 
+                label={paymentMethod === 'PAY_OS' ? 'Thanh toán qua ngân hàng' : paymentMethod} 
+                color="primary" 
+                className="mb-2"
+              />
+            </Box>
+          </Paper>
         </Box>
-        {selectedIndex === 0 && (
-          <BankPayment
-            checkoutResponse={checkoutResponse}
-            isCheckout={isCheckout}
-            onCancel={handleCancelPayment}
-            toast={toast}
-          />
-        )}
+        
+        {/* Thanh toán */}
+        <Box className="flex-1">
+          <ToastContainer position="top-right" autoClose={3000} />
+          {checkoutResponse.qrCode ? (
+            <BankPayment
+              checkoutResponse={{
+                ...checkoutResponse,
+                amount: totalAmount
+              }}
+              isCheckout={isCheckout}
+              onCancel={handleCancelPayment}
+              toast={toast}
+            />
+          ) : (
+            <Paper elevation={3} className="p-6 rounded-lg text-center">
+              <Typography variant="h6" className="mb-4">
+                Đang chờ thông tin thanh toán...
+              </Typography>
+              <Typography>
+                Vui lòng chờ trong giây lát hoặc liên hệ với chúng tôi để được hỗ trợ.
+              </Typography>
+            </Paper>
+          )}
+        </Box>
       </Box>
-    </>
+    </Box>
   )
 }
-export default Payment
+
+export default PaymentPage

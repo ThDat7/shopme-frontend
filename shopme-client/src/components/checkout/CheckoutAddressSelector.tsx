@@ -40,7 +40,7 @@ const CheckoutAddressSelector: React.FC<CheckoutAddressSelectorProps> = ({
         }
       }
     } catch (error) {
-      message.error('Failed to fetch addresses')
+      message.error('Không thể tải danh sách địa chỉ')
     } finally {
       setLoading(false)
     }
@@ -61,13 +61,13 @@ const CheckoutAddressSelector: React.FC<CheckoutAddressSelectorProps> = ({
 
   if (addresses.length === 0) {
     return (
-      <Empty description="You haven't added any addresses yet" className='py-8'>
+      <Empty description="Bạn chưa thêm địa chỉ nào" className='py-8'>
         <Button
           type='primary'
           icon={<PlusOutlined />}
           onClick={handleAddAddress}
         >
-          Add Your First Address
+          Thêm địa chỉ đầu tiên
         </Button>
       </Empty>
     )
@@ -107,7 +107,7 @@ const CheckoutAddressSelector: React.FC<CheckoutAddressSelectorProps> = ({
           onClick={handleAddAddress}
           block
         >
-          Add New Address
+          Thêm địa chỉ mới
         </Button>
       </div>
     </div>

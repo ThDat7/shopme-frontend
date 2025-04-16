@@ -42,6 +42,12 @@ class OrderService extends BaseService {
     }
   }
 
+  async bypassPayment(orderId: number): Promise<void> {
+    await this.post(
+      `${API_ENDPOINTS.TEST}/checkout/order/${orderId}/by-pass-payment`
+    )
+  }
+
   async cancelOrder(orderId: number) {
     try {
       const response = await this.post<void>(
