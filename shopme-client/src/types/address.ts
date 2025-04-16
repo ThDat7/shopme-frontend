@@ -11,12 +11,10 @@ export interface AddressDetail {
   firstName: string
   lastName: string
   phoneNumber: string
-  addressLine1: string
-  addressLine2: string
-  city: string
-  state: string
-  postalCode: string
-  countryName: string
+  addressLine: string
+  wardId: number
+  districtId: number
+  provinceId: number
   defaultForShipping: boolean
 }
 
@@ -24,11 +22,27 @@ export interface AddressRequest {
   firstName: string
   lastName: string
   phoneNumber: string
-  addressLine1: string
-  addressLine2: string
-  city: string
-  state: string
-  postalCode: string
-  countryId: number
+  addressLine: string
+  wardId: number
   defaultForShipping: boolean
+}
+
+export interface Province {
+  id: number
+  name: string
+  code: string
+}
+
+export interface District {
+  id: number
+  name: string
+  code: string
+  provinceId: number
+}
+
+export interface Ward {
+  id: number
+  name: string
+  code: string
+  districtId: number
 }

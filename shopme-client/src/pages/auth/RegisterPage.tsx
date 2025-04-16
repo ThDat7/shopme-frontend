@@ -7,14 +7,8 @@ import {
   Button,
   Paper,
   Grid,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   CircularProgress,
-  FormHelperText,
   Container,
-  Divider,
 } from '@mui/material'
 import * as yup from 'yup'
 import { useFormik } from 'formik'
@@ -24,7 +18,6 @@ import customerService from '../../services/customerService'
 import { CustomerRegister } from '../../types/customer'
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import addressService from '../../services/addressService'
 import { useAuth } from '../../contexts/AuthContext'
 import { CustomerStatus } from '../../types/customer'
 
@@ -46,39 +39,13 @@ const validationSchema = yup.object({
     .string()
     .oneOf([yup.ref('password')], 'Mật khẩu không khớp')
     .required('Xác nhận mật khẩu là bắt buộc'),
-  addressLine1: yup.string().required('Địa chỉ là bắt buộc'),
-  city: yup.string().required('Thành phố là bắt buộc'),
-  state: yup.string().required('Tỉnh/Thành phố là bắt buộc'),
-  countryId: yup.number().required('Quốc gia là bắt buộc'),
 })
 
 const RegisterPage: React.FC = () => {
   const navigate = useNavigate()
   const { refreshCustomerData } = useAuth()
   const [loading, setLoading] = useState(false)
-  const [countries, setCountries] = useState<
-    { value: number; label: string }[]
-  >([])
   const { createRoute } = useRoutes()
-
-  // Load country list on component mount
-  useEffect(() => {
-    const loadCountries = async () => {
-      try {
-        const countriesData = await addressService.getCountriesFormSelect()
-        setCountries(
-          countriesData.map((country) => ({
-            value: parseInt(country.key),
-            label: country.value,
-          }))
-        )
-      } catch (error) {
-        console.error('Failed to load countries:', error)
-      }
-    }
-
-    loadCountries()
-  }, [])
 
   const formik = useFormik({
     initialValues: {
@@ -88,10 +55,6 @@ const RegisterPage: React.FC = () => {
       phoneNumber: '',
       password: '',
       confirmPassword: '',
-      addressLine1: '',
-      city: '',
-      state: '',
-      countryId: 0,
     },
     validationSchema,
     onSubmit: async (values) => {
@@ -268,90 +231,6 @@ const RegisterPage: React.FC = () => {
                     formik.errors.confirmPassword
                   }
                 />
-              </Grid>
-
-              {/* Address Information */}
-              <Grid item xs={12}>
-                <Divider sx={{ my: 2 }} />
-                <Typography variant='h6' sx={{ mb: 2, mt: 2 }}>
-                  Thông tin địa chỉ
-                </Typography>
-              </Grid>
-
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  id='addressLine1'
-                  name='addressLine1'
-                  label='Địa chỉ'
-                  value={formik.values.addressLine1}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={
-                    formik.touched.addressLine1 &&
-                    Boolean(formik.errors.addressLine1)
-                  }
-                  helperText={
-                    formik.touched.addressLine1 && formik.errors.addressLine1
-                  }
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  id='city'
-                  name='city'
-                  label='Quận/Huyện'
-                  value={formik.values.city}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={formik.touched.city && Boolean(formik.errors.city)}
-                  helperText={formik.touched.city && formik.errors.city}
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  id='state'
-                  name='state'
-                  label='Tỉnh/Thành phố'
-                  value={formik.values.state}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={formik.touched.state && Boolean(formik.errors.state)}
-                  helperText={formik.touched.state && formik.errors.state}
-                />
-              </Grid>
-
-              <Grid item xs={12}>
-                <FormControl
-                  fullWidth
-                  error={
-                    formik.touched.countryId && Boolean(formik.errors.countryId)
-                  }
-                >
-                  <InputLabel id='country-label'>Quốc gia</InputLabel>
-                  <Select
-                    labelId='country-label'
-                    id='countryId'
-                    name='countryId'
-                    value={formik.values.countryId}
-                    label='Quốc gia'
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                  >
-                    {countries.map((country) => (
-                      <MenuItem key={country.value} value={country.value}>
-                        {country.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  {formik.touched.countryId && formik.errors.countryId && (
-                    <FormHelperText>{formik.errors.countryId}</FormHelperText>
-                  )}
-                </FormControl>
               </Grid>
 
               <Grid item xs={12}>
