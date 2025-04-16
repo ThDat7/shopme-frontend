@@ -72,7 +72,7 @@ const EmailVerificationPage: React.FC = () => {
         setTimeout(() => {
           // Nếu khách hàng cần cập nhật thông tin thì chuyển hướng tới trang thông tin
           if (updatedCustomer.status === CustomerStatus.NEED_INFO) {
-            navigate(ROUTES.CUSTOMER_INFO)
+            navigate(ROUTES.PROFILE)
           } else {
             // Nếu không thì chuyển hướng về trang chủ
             navigate(ROUTES.HOME)

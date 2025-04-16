@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Box,
@@ -19,6 +19,7 @@ import {
 import * as yup from 'yup'
 import { useFormik } from 'formik'
 import { ROUTES } from '../../config/appConfig'
+import { useRoutes } from '../../hooks/useRoutes'
 import customerService from '../../services/customerService'
 import { CustomerRegister } from '../../types/customer'
 import { toast, ToastContainer } from 'react-toastify'
@@ -58,6 +59,7 @@ const RegisterPage: React.FC = () => {
   const [countries, setCountries] = useState<
     { value: number; label: string }[]
   >([])
+  const { createRoute } = useRoutes()
 
   // Load country list on component mount
   useEffect(() => {
@@ -113,12 +115,12 @@ const RegisterPage: React.FC = () => {
 
           // Redirect based on customer status
           if (customer.status === CustomerStatus.NEED_INFO) {
-            navigate(ROUTES.CUSTOMER_INFO)
+            navigate(createRoute(ROUTES.PROFILE))
           } else if (customer.status === CustomerStatus.UNVERIFIED) {
-            navigate(ROUTES.EMAIL_VERIFICATION)
+            navigate(createRoute(ROUTES.EMAIL_VERIFICATION))
           } else {
             // Default - go to home page
-            navigate(ROUTES.HOME)
+            navigate(createRoute(ROUTES.HOME))
           }
         } else {
           toast.error('Đăng ký thất bại, vui lòng thử lại.')
@@ -133,7 +135,7 @@ const RegisterPage: React.FC = () => {
   })
 
   const handleLoginClick = () => {
-    navigate(ROUTES.LOGIN)
+    navigate(createRoute(ROUTES.LOGIN))
   }
 
   return (

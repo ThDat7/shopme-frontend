@@ -1,4 +1,6 @@
 import React, { useState } from 'react'
+import { Form, Input, Button, Divider, message, Typography, Card, Space } from 'antd'
+import { UserOutlined, LockOutlined, LoginOutlined } from '@ant-design/icons'
 import { Form, Input, Button, Divider, message } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
 import { CustomerLoginRequest } from '../../types/auth'
@@ -7,10 +9,12 @@ import { useNavigate } from 'react-router-dom'
 import { ROUTES } from '../../config/appConfig'
 import { useAuth } from '../../contexts/AuthContext'
 import { CustomerStatus } from '../../types/customer'
+import { useRoutes } from '../../hooks/useRoutes'
 
 const LoginForm: React.FC = () => {
   const [form] = Form.useForm()
   const navigate = useNavigate()
+  const { createRoute } = useRoutes()
   const [loading, setLoading] = useState(false)
   const { login, loginWithGoogle } = useAuth()
 
@@ -26,11 +30,11 @@ const LoginForm: React.FC = () => {
 
       // Xử lý điều hướng dựa trên trạng thái khách hàng
       if (customer.status === CustomerStatus.NEED_INFO) {
-        navigate(ROUTES.CUSTOMER_INFO)
+        navigate(createRoute(ROUTES.PROFILE))
       } else if (customer.status === CustomerStatus.UNVERIFIED) {
-        navigate(ROUTES.EMAIL_VERIFICATION)
+        navigate(createRoute(ROUTES.EMAIL_VERIFICATION))
       } else {
-        navigate(ROUTES.HOME)
+        navigate(createRoute(ROUTES.HOME))
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -51,11 +55,11 @@ const LoginForm: React.FC = () => {
 
       // Xử lý điều hướng dựa trên trạng thái khách hàng
       if (customer.status === CustomerStatus.NEED_INFO) {
-        navigate(ROUTES.CUSTOMER_INFO)
+        navigate(createRoute(ROUTES.PROFILE))
       } else if (customer.status === CustomerStatus.UNVERIFIED) {
-        navigate(ROUTES.EMAIL_VERIFICATION)
+        navigate(createRoute(ROUTES.EMAIL_VERIFICATION))
       } else {
-        navigate(ROUTES.HOME)
+        navigate(createRoute(ROUTES.HOME))
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -119,7 +123,7 @@ const LoginForm: React.FC = () => {
       <div className='mt-4 text-center'>
         <Button
           type='link'
-          onClick={() => navigate(ROUTES.FORGOT_PASSWORD)}
+          onClick={() => navigate(createRoute(ROUTES.FORGOT_PASSWORD))}
           className='text-blue-600 hover:text-blue-800'
         >
           Quên mật khẩu?
@@ -130,7 +134,7 @@ const LoginForm: React.FC = () => {
         Chưa có tài khoản?{' '}
         <Button
           type='link'
-          onClick={() => navigate(ROUTES.REGISTER)}
+          onClick={() => navigate(createRoute(ROUTES.REGISTER))}
           className='text-blue-600 hover:text-blue-800'
         >
           Đăng ký ngay

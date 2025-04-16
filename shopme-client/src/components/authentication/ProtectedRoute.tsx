@@ -45,9 +45,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   // If customer needs to provide additional information and not already on that page, redirect
   if (
     customer?.status === CustomerStatus.NEED_INFO &&
-    location.pathname !== ROUTES.CUSTOMER_INFO
+    location.pathname !== ROUTES.PROFILE
   ) {
-    return <Navigate to={ROUTES.CUSTOMER_INFO} replace />
+    return <Navigate to={ROUTES.PROFILE} replace />
   }
 
   // If authenticated and all checks passed, render children

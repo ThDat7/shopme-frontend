@@ -6,6 +6,7 @@ import { Address } from '../../types/address'
 import addressService from '../../services/addressService'
 import { ROUTES } from '../../config/appConfig'
 import AddressCard from '../address/AddressCard'
+import { useRoutes } from '../../hooks/useRoutes'
 
 interface CheckoutAddressSelectorProps {
   selectedAddressId: number | null
@@ -17,6 +18,7 @@ const CheckoutAddressSelector: React.FC<CheckoutAddressSelectorProps> = ({
   onSelect,
 }) => {
   const navigate = useNavigate()
+  const { createRoute } = useRoutes()
   const [addresses, setAddresses] = useState<Address[]>([])
   const [loading, setLoading] = useState(false)
 
@@ -46,7 +48,7 @@ const CheckoutAddressSelector: React.FC<CheckoutAddressSelectorProps> = ({
 
   const handleAddAddress = () => {
     // Save current checkout state if needed
-    navigate(ROUTES.ADDRESS_NEW)
+    navigate(createRoute(ROUTES.ADDRESS_NEW))
   }
 
   if (loading) {

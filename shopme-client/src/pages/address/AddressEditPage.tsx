@@ -5,12 +5,14 @@ import AddressForm from '../../components/address/AddressForm'
 import { AddressDetail, AddressRequest } from '../../types/address'
 import addressService from '../../services/addressService'
 import { ROUTES } from '../../config/appConfig'
+import { useRoutes } from '../../hooks/useRoutes'
 
 const { Title } = Typography
 
 const AddressEditPage: React.FC = () => {
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
+  const { createRoute } = useRoutes()
   const [address, setAddress] = useState<AddressDetail | undefined>()
   const [loading, setLoading] = useState(false)
 
@@ -27,7 +29,7 @@ const AddressEditPage: React.FC = () => {
       setAddress(data)
     } catch (error) {
       message.error('Failed to fetch address details')
-      navigate(ROUTES.ADDRESSES)
+      navigate(createRoute(ROUTES.ADDRESSES))
     } finally {
       setLoading(false)
     }
@@ -40,7 +42,7 @@ const AddressEditPage: React.FC = () => {
       setLoading(true)
       await addressService.updateAddress(parseInt(id), values)
       message.success('Address updated successfully')
-      navigate(ROUTES.ADDRESSES)
+      navigate(createRoute(ROUTES.ADDRESSES))
     } catch (error) {
       message.error('Failed to update address')
     } finally {
@@ -49,7 +51,7 @@ const AddressEditPage: React.FC = () => {
   }
 
   const handleCancel = () => {
-    navigate(ROUTES.ADDRESSES)
+    navigate(createRoute(ROUTES.ADDRESSES))
   }
 
   if (loading && !address) {

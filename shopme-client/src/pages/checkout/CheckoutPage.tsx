@@ -28,6 +28,7 @@ import {
   PlaceOrderCODRequest,
   PlaceOrderPayOSRequest,
 } from '../../types/checkout'
+import { useRoutes } from '../../hooks/useRoutes'
 
 const { Title, Text } = Typography
 
@@ -45,6 +46,7 @@ const CheckoutPage: React.FC = () => {
   const [selectedItems, setSelectedItems] = useState<number[]>([])
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
+  const { navigateTo } = useRoutes()
 
   // Hardcoded payment methods
   const paymentMethods: PaymentMethodResponse[] = [
@@ -70,7 +72,7 @@ const CheckoutPage: React.FC = () => {
     embedded: true,
     onSuccess: (event: any) => {
       message.success('Payment successful')
-      navigate(ROUTES.ORDER_COMPLETE)
+      navigateTo(ROUTES.ORDER_COMPLETE)
     },
     onExit: () => {
       message.info('Payment cancelled')
@@ -188,16 +190,17 @@ const CheckoutPage: React.FC = () => {
       const request = {
         addressId: selectedAddressId,
         cartItemIds: selectedItems,
-        returnUrl: `${window.location.origin}${ROUTES.ORDER_COMPLETE}`,
+        returnUrl: `${window.location.origin}${ROUTES.PAYMENT_RESULT}`,
         cancelUrl: `${window.location.origin}${ROUTES.CHECKOUT}`,
       }
 
       if (selectedPaymentMethod === PaymentMethod.COD) {
         await checkoutService.placeOrderCOD(request)
         navigate(ROUTES.ORDER_COMPLETE)
+        navigateTo(ROUTES.ORDERS)
       } else {
         const response = await checkoutService.placeOrderPayOS(request)
-        navigate('/payment', {
+        navigateTo(ROUTES.PAYMENT, undefined, undefined, {
           state: {
             checkoutResponse: response.data,
             cartItems: cartItems.filter((item) =>

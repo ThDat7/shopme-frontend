@@ -5,19 +5,21 @@ import AddressForm from '../../components/address/AddressForm'
 import { AddressRequest } from '../../types/address'
 import addressService from '../../services/addressService'
 import { ROUTES } from '../../config/appConfig'
+import { useRoutes } from '../../hooks/useRoutes'
 
 const { Title } = Typography
 
 const AddressNewPage: React.FC = () => {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
+  const { createRoute } = useRoutes()
 
   const handleSubmit = async (values: AddressRequest) => {
     try {
       setLoading(true)
       await addressService.createAddress(values)
       message.success('Address added successfully')
-      navigate(ROUTES.ADDRESSES)
+      navigate(createRoute(ROUTES.ADDRESSES))
     } catch (error) {
       message.error('Failed to add address')
     } finally {
@@ -26,7 +28,7 @@ const AddressNewPage: React.FC = () => {
   }
 
   const handleCancel = () => {
-    navigate(ROUTES.ADDRESSES)
+    navigate(createRoute(ROUTES.ADDRESSES))
   }
 
   return (

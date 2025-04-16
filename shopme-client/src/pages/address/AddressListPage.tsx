@@ -6,11 +6,13 @@ import AddressCard from '../../components/address/AddressCard'
 import { Address } from '../../types/address'
 import addressService from '../../services/addressService'
 import { ROUTES } from '../../config/appConfig'
+import { useRoutes } from '../../hooks/useRoutes'
 
 const { Title } = Typography
 
 const AddressListPage: React.FC = () => {
   const navigate = useNavigate()
+  const { createRoute } = useRoutes()
   const [addresses, setAddresses] = useState<Address[]>([])
   const [loading, setLoading] = useState(false)
 
@@ -31,7 +33,7 @@ const AddressListPage: React.FC = () => {
   }
 
   const handleEdit = (id: number) => {
-    navigate(ROUTES.ADDRESS_EDIT.replace(':id', id.toString()))
+    navigate(createRoute(ROUTES.ADDRESS_EDIT, { id: id.toString() }))
   }
 
   const handleDelete = async (id: number) => {
