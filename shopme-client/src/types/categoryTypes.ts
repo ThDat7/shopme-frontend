@@ -1,3 +1,5 @@
+import { PaginationParams } from "./commonTypes";
+
 interface Category {
   id: number
   name: string
@@ -5,11 +7,16 @@ interface Category {
 
 export interface CategoryResponse extends Category {
   image: string
+  productCount?: number
+  parentId?: number
+  hasChildren?: boolean
 }
 
-export interface CategoryBreadcrumbResponse extends Category {}
+export interface CategoryBreadcrumbResponse extends Category {
+  alias?: string;
+}
 
-export interface ListCategoryResponse {
-  categories: CategoryResponse[]
-  breadcrumbs: CategoryBreadcrumbResponse[]
+export interface CategoryListParams extends PaginationParams {
+  keyword?: string
+  parentId?: number
 }

@@ -4,6 +4,7 @@ import { PaginationParams } from './commonTypes'
 export interface ProductListResponse {
   id: number
   name: string
+  alias: string
   mainImage: string
 
   price: number
@@ -13,26 +14,43 @@ export interface ProductListResponse {
   averageRating: number
   reviewCount: number
   saleCount: number
+
+  shortDescription?: string
+  description?: string
+  brand?: string
+  category?: string
+  features?: string[]
+  inStock?: boolean
+  stockQuantity?: number
+  createdTime?: number
+  updatedTime?: string
 }
 
 export interface ProductDetailResponse {
   id: number
   name: string
   alias: string
-  shortDescription: string
-  fullDescription: string
+  description: string
   inStock: boolean
-  cost: number
+
   price: number
   discountPercent: number
+  discountPrice: number
+
   length: number
   width: number
   height: number
   weight: number
+
   mainImage: string
   category: string
   brand: string
   images: string[]
+
+  averageRating: number
+  reviewCount: number
+  saleCount: number
+
   details: ProductSpecificResponse[]
   breadcrumbs: CategoryBreadcrumbResponse[]
 }
@@ -47,21 +65,21 @@ export interface ProductListParams extends PaginationParams {
   keyword?: string
   minPrice?: number
   maxPrice?: number
-  categoryId?: number
-  brandId?: number
-  rating?: number
+  categoryIds?: number[]
+  brandIds?: number[]
+  minRating?: number
   inStock?: boolean
-  sortBy?: 'price' | 'name' | 'rating' | 'createdAt' | 'soldCount'
+  sortField?: string
   sortDirection?: 'asc' | 'desc'
-  type?: 'best-seller' | 'trending' | 'top-rated' | 'discounted'
+  filterType?: ProductFilterType
 }
 
 export enum ProductFilterType {
-  ALL = 'all',
-  BEST_SELLER = 'bestSeller',
-  TRENDING = 'trending',
-  HIGH_RATED = 'highRated',
-  DISCOUNTED = 'discounted',
+  ALL = 'ALL',
+  BEST_SELLER = 'BEST_SELLER',
+  TRENDING = 'TRENDING',
+  HIGH_RATED = 'HIGH_RATED',
+  DISCOUNTED = 'DISCOUNTED',
 }
 
 export const PRODUCT_TYPE_LABELS: Record<ProductFilterType, string> = {
