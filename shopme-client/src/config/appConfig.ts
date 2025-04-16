@@ -13,6 +13,7 @@ export const API_ENDPOINTS = {
   TEST: '/test-env',
   CUSTOMERS: '/api/v1/customers',
   PROMOTIONS: '/api/v1/promotions',
+  REVIEWS: '/api/v1/reviews',
   FEATURE_CATEGORIES: '/api/v1/feature-category-brand',
   CAROUSEL_IMAGES: '/api/v1/carousel-images',
 }
