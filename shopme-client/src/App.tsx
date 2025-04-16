@@ -25,6 +25,7 @@ import ScrollToTop from './components/layout/ScrollToTop'
 import ProtectedRoute from './components/authentication/ProtectedRoute'
 import { ROUTES } from './config/appConfig'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
+import PromotionsPage from './pages/promotions/PromotionsPage'
 
 const App: React.FC = () => {
   return (
@@ -57,6 +58,11 @@ const AppContent: React.FC = () => {
             <Route path={ROUTES.LOGIN} element={<LoginPage />} />
             <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
             <Route index element={<HomePage />} />
+              <Route path={ROUTES.PROMOTIONS} element={<PromotionsPage />} />
+              <Route
+                  path={ROUTES.PROMOTION_DETAIL}
+                  element={<PromotionsPage />}
+              />
             <Route path='categories' element={<CategoryPage />} />
             <Route path='categories/:id' element={<CategoryPage />} />
             <Route path='products' element={<ProductListPage />} />

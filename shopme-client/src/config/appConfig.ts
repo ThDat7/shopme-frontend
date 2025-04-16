@@ -3,6 +3,7 @@ export const API_BASE_URL = 'http://localhost'
 export const API_ENDPOINTS = {
   PRODUCTS: '/api/v1/products',
   CATEGORIES: '/api/v1/categories',
+  BRANDS: '/api/v1/brands',
   AUTH: '/api/v1/auth',
   CART: '/api/v1/cart',
   ADDRESSES: '/api/v1/addresses',
@@ -11,6 +12,8 @@ export const API_ENDPOINTS = {
   ORDERS: '/api/v1/orders',
   TEST: '/test-env',
   CUSTOMERS: '/api/v1/customers',
+  PROMOTIONS: '/api/v1/promotions',
+  FEATURE_CATEGORIES: '/api/v1/feature-category-brand',
 }
 
 export const APP_CONFIG = {
@@ -50,4 +53,6 @@ export const ROUTES = {
   CUSTOMER_INFO: '/customer-info',
   PROFILE: '/profile',
   FORGOT_PASSWORD: '/forgot-password',
+  PROMOTIONS: '/promotions',
+  PROMOTION_DETAIL: '/promotions/:promotionSlug',
 }
