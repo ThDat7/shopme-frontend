@@ -25,7 +25,9 @@ import ScrollToTop from './components/layout/ScrollToTop'
 import ProtectedRoute from './components/authentication/ProtectedRoute'
 import { ROUTES } from './config/appConfig'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
+import NewsPage from './pages/news/NewsPage'
 import PromotionsPage from './pages/promotions/PromotionsPage'
+import SupportPage from './pages/support/SupportPage'
 
 const App: React.FC = () => {
   return (
@@ -67,6 +69,16 @@ const AppContent: React.FC = () => {
             <Route path='categories/:id' element={<CategoryPage />} />
             <Route path='products' element={<ProductListPage />} />
             <Route path='products/:id' element={<ProductDetailPage />} />
+              <Route path={ROUTES.NEWS} element={<NewsPage />} />
+              <Route path={ROUTES.SUPPORT} element={<SupportPage />} />
+              <Route path={ROUTES.SUPPORT_GUIDE} element={<SupportPage />} />
+              <Route
+                  path={ROUTES.SUPPORT_RETURN_POLICY}
+                  element={<SupportPage />}
+              />
+              <Route path={ROUTES.SUPPORT_WARRANTY} element={<SupportPage />} />
+              <Route path={ROUTES.SUPPORT_CONTACT} element={<SupportPage />} />
+              <Route path={ROUTES.SUPPORT_FAQ} element={<SupportPage />} />
 
             {/* Protected routes */}
             <Route

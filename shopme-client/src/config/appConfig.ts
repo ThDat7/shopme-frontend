@@ -53,6 +53,8 @@ export const ROUTES = {
   CUSTOMER_INFO: '/customer-info',
   PROFILE: '/profile',
   FORGOT_PASSWORD: '/forgot-password',
+  NEWS: '/news',
+  SUPPORT: '/supports',
   PROMOTIONS: '/promotions',
   PROMOTION_DETAIL: '/promotions/:promotionSlug',
 }
