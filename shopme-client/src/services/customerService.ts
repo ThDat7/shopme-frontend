@@ -7,6 +7,9 @@ import {
   ResendVerificationRequest,
   VerifyEmailResponse,
   CustomerRegisterResponse,
+  ForgotPasswordRequest,
+  ResetPasswordRequest,
+  VerifyResetCodeRequest,
 } from '../types/customer'
 
 class CustomerService extends BaseService {
@@ -62,6 +65,42 @@ class CustomerService extends BaseService {
       const response = await this.put<Customer>(
           `${API_ENDPOINTS.CUSTOMERS}/profile`,
           data
+      )
+      return response.result
+    } catch (error) {
+      return this.handleError(error)
+    }
+  }
+
+  async forgotPassword(data: ForgotPasswordRequest) {
+    try {
+      const response = await this.post<void>(
+        `${API_ENDPOINTS.CUSTOMERS}/forgot-password`,
+        data
+      )
+      return response.result
+    } catch (error) {
+      return this.handleError(error)
+    }
+  }
+
+  async verifyResetCode(data: VerifyResetCodeRequest) {
+    try {
+      const response = await this.post<{verified: boolean}>(
+        `${API_ENDPOINTS.CUSTOMERS}/verify-reset-code`,
+        data
+      )
+      return response.result
+    } catch (error) {
+      return this.handleError(error)
+    }
+  }
+
+  async resetPassword(data: ResetPasswordRequest) {
+    try {
+      const response = await this.post<void>(
+        `${API_ENDPOINTS.CUSTOMERS}/reset-password`,
+        data
       )
       return response.result
     } catch (error) {

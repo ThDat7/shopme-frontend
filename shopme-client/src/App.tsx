@@ -31,6 +31,8 @@ import NewsPage from './pages/news/NewsPage'
 import PromotionsPage from './pages/promotions/PromotionsPage'
 import SupportPage from './pages/support/SupportPage'
 import { CartProvider } from './contexts/CartContext'
+import ForgotPasswordPage from './pages/auth/ForgotPasswordPage'
+import ResetPasswordPage from './pages/auth/ResetPasswordPage'
 
 const App: React.FC = () => {
   return (
@@ -69,8 +71,18 @@ const AppContent: React.FC = () => {
               element={<EmailVerificationPage />}
             />
             <Route path={ROUTES.PROFILE} element={<CustomerInfoPage />} />
+            <Route
+              path={ROUTES.FORGOT_PASSWORD}
+              element={<ForgotPasswordPage />}
+            />
+            <Route
+              path={ROUTES.RESET_PASSWORD}
+              element={<ResetPasswordPage />}
+            />
 
             <Route index element={<HomePage />} />
+            {/* <Route path='categories' element={<CategoryPage />} />
+            <Route path='categories/:id' element={<CategoryPage />} /> */}
             <Route path={ROUTES.PRODUCTS} element={<ProductListPage />} />
             <Route
               path={ROUTES.PRODUCT_DETAIL}
