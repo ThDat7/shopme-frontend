@@ -1,0 +1,46 @@
+/* Custom styles for Steps component */
+.step-completed .ant-steps-item-icon {
+  background-color: #f0fdf4;
+  border-color: #22c55e;
+}
+
+.step-completed .ant-steps-item-content .ant-steps-item-title::after {
+  background-color: #22c55e;
+}
+
+.step-current .ant-steps-item-icon {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+}
+
+.step-pending .ant-steps-item-icon {
+  background-color: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.step-pending .ant-steps-item-content {
+  opacity: 0.6;
+}
+
+.step-pending .ant-steps-item-title, 
+.step-pending .ant-steps-item-description {
+  color: #9ca3af !important;
+}
+
+.ant-steps-item {
+  padding-bottom: 1rem;
+}
+
+/* Make future steps more visually distinct */
+.step-pending {
+  position: relative;
+}
+
+.step-pending::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.03);
+  border-radius: 0.25rem;
+  z-index: -1;
+}
