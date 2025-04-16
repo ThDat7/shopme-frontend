@@ -38,7 +38,7 @@ const AddressCard: React.FC<AddressCardProps> = ({
             </Title>
             {address.defaultForShipping && (
               <Tag color='blue' icon={<CheckCircleOutlined />}>
-                Default
+                Mặc định
               </Tag>
             )}
           </div>
@@ -53,16 +53,16 @@ const AddressCard: React.FC<AddressCardProps> = ({
             icon={<EditOutlined />}
             onClick={() => onEdit(address.id)}
           >
-            Edit
+            Sửa
           </Button>
           <Popconfirm
-            title='Are you sure you want to delete this address?'
+            title='Bạn có chắc chắn muốn xóa địa chỉ này?'
             onConfirm={() => onDelete(address.id)}
-            okText='Yes'
-            cancelText='No'
+            okText='Có'
+            cancelText='Không'
           >
             <Button type='text' danger icon={<DeleteOutlined />}>
-              Delete
+              Xóa
             </Button>
           </Popconfirm>
           {!address.defaultForShipping && (
@@ -71,7 +71,7 @@ const AddressCard: React.FC<AddressCardProps> = ({
               onClick={() => onSetDefault(address.id)}
               className='ml-2'
             >
-              Set as Default
+              Đặt làm mặc định
             </Button>
           )}
         </Space>

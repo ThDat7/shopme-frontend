@@ -4,7 +4,6 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { ConfigProvider, Spin } from 'antd'
 import Layout from './components/layout/Layout'
 import HomePage from './pages/home/HomePage'
-import CategoryPage from './pages/category/CategoryPage'
 import ProductDetailPage from './pages/product/ProductDetailPage'
 import ProductListPage from './pages/product/ProductListPage'
 import AddressListPage from './pages/address/AddressListPage'
@@ -13,8 +12,11 @@ import AddressEditPage from './pages/address/AddressEditPage'
 import { ToastContainer } from 'react-toastify'
 import theme from './theme/themeConfig'
 import './App.css'
+import './theme/buttonFix.css'
 import LoginPage from './pages/auth/LoginPage'
 import RegisterPage from './pages/auth/RegisterPage'
+import EmailVerificationPage from './pages/auth/EmailVerificationPage'
+import CustomerInfoPage from './pages/auth/CustomerInfoPage'
 import CartPage from './pages/cart/CartPage'
 import CheckoutPage from './pages/checkout/CheckoutPage'
 import PaymentPage from './pages/payment/PaymentPage'
@@ -28,11 +30,14 @@ import { AuthProvider, useAuth } from './contexts/AuthContext'
 import NewsPage from './pages/news/NewsPage'
 import PromotionsPage from './pages/promotions/PromotionsPage'
 import SupportPage from './pages/support/SupportPage'
+import { CartProvider } from './contexts/CartContext'
 
 const App: React.FC = () => {
   return (
     <AuthProvider>
-      <AppContent />
+      <CartProvider>
+        <AppContent />
+      </CartProvider>
     </AuthProvider>
   )
 }
@@ -59,30 +64,38 @@ const AppContent: React.FC = () => {
             {/* Authentication routes */}
             <Route path={ROUTES.LOGIN} element={<LoginPage />} />
             <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
+            <Route
+              path={ROUTES.EMAIL_VERIFICATION}
+              element={<EmailVerificationPage />}
+            />
+            <Route path={ROUTES.PROFILE} element={<CustomerInfoPage />} />
+
             <Route index element={<HomePage />} />
-              <Route path={ROUTES.PROMOTIONS} element={<PromotionsPage />} />
-              <Route
-                  path={ROUTES.PROMOTION_DETAIL}
-                  element={<PromotionsPage />}
-              />
-            <Route path='categories' element={<CategoryPage />} />
-            <Route path='categories/:id' element={<CategoryPage />} />
-            <Route path='products' element={<ProductListPage />} />
-            <Route path='products/:id' element={<ProductDetailPage />} />
-              <Route path={ROUTES.NEWS} element={<NewsPage />} />
-              <Route path={ROUTES.SUPPORT} element={<SupportPage />} />
-              <Route path={ROUTES.SUPPORT_GUIDE} element={<SupportPage />} />
-              <Route
-                  path={ROUTES.SUPPORT_RETURN_POLICY}
-                  element={<SupportPage />}
-              />
-              <Route path={ROUTES.SUPPORT_WARRANTY} element={<SupportPage />} />
-              <Route path={ROUTES.SUPPORT_CONTACT} element={<SupportPage />} />
-              <Route path={ROUTES.SUPPORT_FAQ} element={<SupportPage />} />
+            <Route path={ROUTES.PRODUCTS} element={<ProductListPage />} />
+            <Route
+              path={ROUTES.PRODUCT_DETAIL}
+              element={<ProductDetailPage />}
+            />
+            <Route path={ROUTES.NEWS} element={<NewsPage />} />
+            <Route path={ROUTES.PROMOTIONS} element={<PromotionsPage />} />
+            <Route
+              path={ROUTES.PROMOTION_DETAIL}
+              element={<PromotionsPage />}
+            />
+            <Route path={ROUTES.SUPPORT} element={<SupportPage />} />
+            <Route path={ROUTES.SUPPORT_GUIDE} element={<SupportPage />} />
+            <Route
+              path={ROUTES.SUPPORT_RETURN_POLICY}
+              element={<SupportPage />}
+            />
+            <Route path={ROUTES.SUPPORT_WARRANTY} element={<SupportPage />} />
+            <Route path={ROUTES.SUPPORT_CONTACT} element={<SupportPage />} />
+            <Route path={ROUTES.SUPPORT_FAQ} element={<SupportPage />} />
+            {/* <Route path={ROUTES.CATEGORY_DETAIL} element={<CategoryPage />} /> */}
 
             {/* Protected routes */}
             <Route
-              path='/cart'
+              path={ROUTES.CART}
               element={
                 <ProtectedRoute>
                   <CartPage />
@@ -90,7 +103,7 @@ const AppContent: React.FC = () => {
               }
             />
             <Route
-              path='/checkout'
+              path={ROUTES.CHECKOUT}
               element={
                 <ProtectedRoute>
                   <CheckoutPage />
@@ -98,7 +111,7 @@ const AppContent: React.FC = () => {
               }
             />
             <Route
-              path='/addresses'
+              path={ROUTES.ADDRESSES}
               element={
                 <ProtectedRoute>
                   <AddressListPage />
@@ -106,7 +119,7 @@ const AppContent: React.FC = () => {
               }
             />
             <Route
-              path='/addresses/new'
+              path={ROUTES.ADDRESS_NEW}
               element={
                 <ProtectedRoute>
                   <AddressNewPage />
@@ -114,7 +127,7 @@ const AppContent: React.FC = () => {
               }
             />
             <Route
-              path='/addresses/edit/:id'
+              path={ROUTES.ADDRESS_EDIT}
               element={
                 <ProtectedRoute>
                   <AddressEditPage />
@@ -122,7 +135,7 @@ const AppContent: React.FC = () => {
               }
             />
             <Route
-              path='/payment'
+              path={ROUTES.PAYMENT}
               element={
                 <ProtectedRoute>
                   <PaymentPage />
@@ -130,7 +143,7 @@ const AppContent: React.FC = () => {
               }
             />
             <Route
-              path='/payment/result'
+              path={ROUTES.PAYMENT_RESULT}
               element={
                 <ProtectedRoute>
                   <PaymentResultPage />
@@ -138,7 +151,7 @@ const AppContent: React.FC = () => {
               }
             />
             <Route
-              path='/orders'
+              path={ROUTES.ORDERS}
               element={
                 <ProtectedRoute>
                   <OrdersPage />
@@ -146,7 +159,7 @@ const AppContent: React.FC = () => {
               }
             />
             <Route
-              path='/orders/:id'
+              path={ROUTES.ORDER_DETAIL}
               element={
                 <ProtectedRoute>
                   <OrderDetailPage />

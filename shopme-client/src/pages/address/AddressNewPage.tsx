@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Card, Typography, message } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import AddressForm from '../../components/address/AddressForm'
@@ -12,20 +12,16 @@ const { Title } = Typography
 
 const AddressNewPage: React.FC = () => {
   const navigate = useNavigate()
-  const [loading, setLoading] = useState(false)
   const { createRoute } = useRoutes()
   const { customer } = useAuth()
 
   const handleSubmit = async (values: AddressRequest) => {
     try {
-      setLoading(true)
       await addressService.createAddress(values)
-      message.success('Address added successfully')
+      message.success('Thêm địa chỉ thành công')
       navigate(createRoute(ROUTES.ADDRESSES))
     } catch (error) {
-      message.error('Failed to add address')
-    } finally {
-      setLoading(false)
+      message.error('Không thể thêm địa chỉ')
     }
   }
 
@@ -43,11 +39,11 @@ const AddressNewPage: React.FC = () => {
   return (
     <div className='container mx-auto px-4 py-8'>
       <Card>
-        <Title level={2}>Add New Address</Title>
-        <AddressForm
-            initialValues={initialValues as AddressDetail}
-            onSubmit={handleSubmit}
-            onCancel={handleCancel}
+        <Title level={2}>Thêm địa chỉ mới</Title>
+        <AddressForm 
+          initialValues={initialValues as AddressDetail}
+          onSubmit={handleSubmit} 
+          onCancel={handleCancel} 
         />
       </Card>
     </div>

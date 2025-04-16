@@ -28,7 +28,7 @@ const AddressEditPage: React.FC = () => {
       const data = await addressService.getAddressDetail(addressId)
       setAddress(data)
     } catch (error) {
-      message.error('Failed to fetch address details')
+      message.error('Không thể tải thông tin địa chỉ')
       navigate(createRoute(ROUTES.ADDRESSES))
     } finally {
       setLoading(false)
@@ -41,10 +41,10 @@ const AddressEditPage: React.FC = () => {
     try {
       setLoading(true)
       await addressService.updateAddress(parseInt(id), values)
-      message.success('Address updated successfully')
+      message.success('Cập nhật địa chỉ thành công')
       navigate(createRoute(ROUTES.ADDRESSES))
     } catch (error) {
-      message.error('Failed to update address')
+      message.error('Không thể cập nhật địa chỉ')
     } finally {
       setLoading(false)
     }
@@ -65,7 +65,7 @@ const AddressEditPage: React.FC = () => {
   return (
     <div className='container mx-auto px-4 py-8'>
       <Card>
-        <Title level={2}>Edit Address</Title>
+        <Title level={2}>Chỉnh sửa địa chỉ</Title>
         {address && (
           <AddressForm
             initialValues={address}

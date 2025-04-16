@@ -1,0 +1,78 @@
+/* Fix cho các button không hiển thị text và icon */
+.ant-btn {
+  color: inherit;
+}
+
+.ant-btn-primary {
+  color: #fff !important;
+}
+
+.ant-btn-default {
+  color: rgba(0, 0, 0, 0.88) !important;
+}
+
+.ant-btn-dashed {
+  color: rgba(0, 0, 0, 0.88) !important;
+}
+
+.ant-btn-text {
+  color: rgba(0, 0, 0, 0.88) !important;
+}
+
+.ant-btn-link {
+  color: #1677ff !important;
+}
+
+.ant-btn-ghost {
+  color: #fff !important;
+}
+
+.ant-btn-danger {
+  color: #fff !important;
+}
+
+/* Fix cho hover state */
+.ant-btn:hover {
+  color: inherit;
+}
+
+.ant-btn-primary:hover {
+  color: #fff !important;
+}
+
+.ant-btn-default:hover {
+  color: #1677ff !important;
+}
+
+.ant-btn-dashed:hover {
+  color: #1677ff !important;
+}
+
+.ant-btn-text:hover {
+  color: #1677ff !important;
+}
+
+.ant-btn-link:hover {
+  color: #69b1ff !important;
+}
+
+.ant-btn-ghost:hover {
+  color: #fff !important;
+}
+
+.ant-btn-danger:hover {
+  color: #fff !important;
+}
+
+/* Fix cho các icon trong button */
+.ant-btn .anticon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Fix cho các button có icon và text */
+.ant-btn > .anticon + span,
+.ant-btn > span + .anticon {
+  margin-left: 8px;
+}

@@ -26,7 +26,7 @@ const AddressListPage: React.FC = () => {
       const data = await addressService.getAddresses()
       setAddresses(data)
     } catch (error) {
-      message.error('Failed to fetch addresses')
+      message.error('Không thể tải danh sách địa chỉ')
     } finally {
       setLoading(false)
     }
@@ -39,20 +39,20 @@ const AddressListPage: React.FC = () => {
   const handleDelete = async (id: number) => {
     try {
       await addressService.deleteAddress(id)
-      message.success('Address deleted successfully')
+      message.success('Đã xóa địa chỉ thành công')
       fetchAddresses()
     } catch (error) {
-      message.error('Failed to delete address')
+      message.error('Không thể xóa địa chỉ')
     }
   }
 
   const handleSetDefault = async (id: number) => {
     try {
       await addressService.setDefaultAddress(id)
-      message.success('Default address updated successfully')
+      message.success('Đã cập nhật địa chỉ mặc định thành công')
       fetchAddresses()
     } catch (error) {
-      message.error('Failed to update default address')
+      message.error('Không thể cập nhật địa chỉ mặc định')
     }
   }
 
@@ -71,23 +71,23 @@ const AddressListPage: React.FC = () => {
   return (
     <div className='container mx-auto px-4 py-8'>
       <div className='flex justify-between items-center mb-6'>
-        <Title level={2}>My Addresses</Title>
+        <Title level={2}>Địa chỉ của tôi</Title>
         <Button
           type='primary'
           icon={<PlusOutlined />}
           onClick={handleAddAddress}
         >
-          Add New Address
+          Thêm địa chỉ mới
         </Button>
       </div>
 
       {addresses.length === 0 ? (
         <Empty
-          description="You haven't added any addresses yet"
+          description="Bạn chưa thêm địa chỉ nào"
           className='py-12'
         >
           <Button type='primary' onClick={handleAddAddress}>
-            Add Your First Address
+            Thêm địa chỉ đầu tiên
           </Button>
         </Empty>
       ) : (

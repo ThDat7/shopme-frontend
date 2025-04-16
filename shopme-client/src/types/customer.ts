@@ -17,10 +17,6 @@ export interface Customer {
   lastName: string
   email: string
   phoneNumber: string
-  addressLine1: string
-  city: string
-  state: string
-  countryId: number
   status: CustomerStatus
   authenticationType: CustomerAuthenticationType
 }
@@ -31,10 +27,6 @@ export interface CustomerRegister {
   email: string
   phoneNumber: string
   password: string
-  addressLine1: string
-  city: string
-  state: string
-  countryId: number
 }
 
 export interface CustomerRegisterResponse extends CustomerLoginResponse {}
@@ -50,4 +42,19 @@ export interface VerifyEmailResponse {
 
 export interface ResendVerificationRequest {
   email: string
+}
+
+export interface ForgotPasswordRequest {
+  email: string
+}
+
+export interface VerifyResetCodeRequest {
+  email: string
+  resetCode: string
+}
+
+export interface ResetPasswordRequest {
+  email: string
+  resetCode: string
+  newPassword: string
 }
