@@ -7,98 +7,55 @@ import UserRoutes from './UserRoutes'
 import CategoryRoutes from './CategoryRoutes'
 import ProfilePage from '../pages/profile/ProfilePage'
 import BrandRoutes from './BrandRoutes'
-import ProductList from '../pages/products/ProductList'
-import CreateProduct from '../pages/products/CreateProduct'
-import EditProduct from '../pages/products/EditProduct'
+import ProductRoutes from './ProductRoutes'
 import SettingRoutes from './SettingRoutes'
 import LocationRoutes from './locationRoutes'
+import ShippingRoutes from './ShippingRoutes'
 import OrderRoutes from './orderRoutes'
+import UnauthorizedPage from '../pages/unauthorized/UnauthorizedPage'
 
 const AppRoutes: React.FC = () => {
   return (
     <Routes>
+      {/* Public Routes */}
       <Route path='/login' element={<LoginPage />} />
-      <Route
-        path='/users/*'
-        element={
-          <ProtectedRoute>
-            <UserRoutes />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path='/categories/*'
-        element={
-          <ProtectedRoute>
-            <CategoryRoutes />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path='/brands/*'
-        element={
-          <ProtectedRoute>
-            <BrandRoutes />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path='/profile'
-        element={
-          <ProtectedRoute>
-            <ProfilePage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path='/products'
-        element={
-          <ProtectedRoute>
-            <ProductList />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path='/products/create'
-        element={
-          <ProtectedRoute>
-            <CreateProduct />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path='/products/edit/:id'
-        element={
-          <ProtectedRoute>
-            <EditProduct />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path='/settings/*'
-        element={
-          <ProtectedRoute>
-            <SettingRoutes />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path='/locations/*'
-        element={
-          <ProtectedRoute>
-            <LocationRoutes />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path='/orders/*'
-        element={
-          <ProtectedRoute>
-            <OrderRoutes />
-          </ProtectedRoute>
-        }
-      />
-      <Route path='/' element={<Navigate to='/users' replace />} />
+      <Route path='/unauthorized' element={<UnauthorizedPage />} />
+
+      {/* Protected Routes - Tất cả routes cần xác thực */}
+      <Route element={<ProtectedRoute />}>
+        {/* User routes */}
+        <Route path='/users/*' element={<UserRoutes />} />
+
+        {/* Category routes */}
+        <Route path='/categories/*' element={<CategoryRoutes />} />
+
+        {/* Brand routes */}
+        <Route path='/brands/*' element={<BrandRoutes />} />
+
+        {/* Profile page - Chỉ cần xác thực, không cần phân quyền */}
+        <Route path='/profile' element={<ProfilePage />} />
+
+        {/* Product routes */}
+        <Route path='/products/*' element={<ProductRoutes />} />
+
+        {/* Settings routes */}
+        <Route path='/settings/*' element={<SettingRoutes />} />
+
+        {/* Location routes */}
+        <Route path='/locations/*' element={<LocationRoutes />} />
+
+        {/* Shipping routes */}
+        <Route path='/shipping-rates/*' element={<ShippingRoutes />} />
+
+        {/* Order routes */}
+        <Route path='/orders/*' element={<OrderRoutes />} />
+
+        {/* Default route */}
+        <Route path='/' element={<Navigate to='/users' replace />} />
+      </Route>
+
+      {/* Fallback route - chuyển hướng các routes không tồn tại */}
+      <Route path='*' element={<Navigate to='/' replace />} />
     </Routes>
   )
 }

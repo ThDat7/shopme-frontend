@@ -1,12 +1,21 @@
 import React from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 import LocationsPage from '../pages/locations'
-import { ROUTES } from '../config/appConfig'
+import Authorization from '../components/security/Authorization'
 
 const LocationRoutes: React.FC = () => {
   return (
     <Routes>
-      <Route path='/' element={<LocationsPage />} />
+      <Route
+        path='/'
+        element={
+          <Authorization
+            permissions={{ resource: 'locations', action: 'read' }}
+          >
+            <LocationsPage />
+          </Authorization>
+        }
+      />
     </Routes>
   )
 }

@@ -1,39 +1,43 @@
 // src/routes/UserRoutes.tsx
 import React from 'react'
-import { Route, Routes } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
 import UserList from '../pages/users/UserList'
 import CreateUser from '../pages/users/CreateUser'
 import EditUser from '../pages/users/EditUser'
-import { ProtectedRoute } from './ProtectedRoute'
+import Authorization from '../components/security/Authorization'
 
 const UserRoutes: React.FC = () => {
   return (
     <Routes>
+      {/* List users - cần quyền read */}
       <Route
         path='/'
         element={
-          <ProtectedRoute>
+          <Authorization permissions={{ resource: 'users', action: 'read' }}>
             <UserList />
-          </ProtectedRoute>
+          </Authorization>
         }
       />
+
+      {/* Create user - cần quyền create */}
       <Route
         path='/create'
         element={
-          <ProtectedRoute>
+          <Authorization permissions={{ resource: 'users', action: 'create' }}>
             <CreateUser />
-          </ProtectedRoute>
+          </Authorization>
         }
       />
+
+      {/* Edit user - cần quyền update */}
       <Route
         path='/edit/:id'
         element={
-          <ProtectedRoute>
+          <Authorization permissions={{ resource: 'users', action: 'update' }}>
             <EditUser />
-          </ProtectedRoute>
+          </Authorization>
         }
       />
-      {/* Add more user-related routes here as needed */}
     </Routes>
   )
 }
