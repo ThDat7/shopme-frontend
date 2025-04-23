@@ -1,11 +1,19 @@
 import React from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 import SettingsPage from '../pages/settings'
+import Authorization from '../components/security/Authorization'
 
 const SettingRoutes: React.FC = () => {
   return (
     <Routes>
-      <Route path='/' element={<SettingsPage />} />
+      <Route
+        path='/'
+        element={
+          <Authorization permissions={{ resource: 'settings', action: 'read' }}>
+            <SettingsPage />
+          </Authorization>
+        }
+      />
     </Routes>
   )
 }
