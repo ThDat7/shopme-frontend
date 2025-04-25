@@ -3,7 +3,6 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { Card, Typography, Spin } from 'antd'
 import ProductForm from '../../components/product/ProductForm'
 import {
-  ProductCreateRequest,
   ProductDetailResponse,
   ProductUpdateRequest,
 } from '../../types/productTypes'

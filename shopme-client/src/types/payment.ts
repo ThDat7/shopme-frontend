@@ -18,9 +18,10 @@ export interface VietQRBankResponse {
 export const PaymentMethod = {
   COD: 'COD',
   PAY_OS: 'PAY_OS',
+  BANK_TRANSFER: 'BANK_TRANSFER',
 } as const
 
-export type PaymentMethod = (typeof PaymentMethod)[keyof typeof PaymentMethod]
+export type PaymentMethod = typeof PaymentMethod[keyof typeof PaymentMethod]
 
 export interface PayOSCheckoutResponse {
   bin: string

@@ -12,14 +12,8 @@ import {
 import { PlusOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import type { ColumnsType } from 'antd/es/table'
-import {
-  ShippingRate,
-  ShippingRateCreateRequest,
-  ShippingRateListParams,
-  ShippingRateUpdateRequest,
-} from '../../types/shipping'
+import { ShippingRate, ShippingRateListParams } from '../../types/shipping'
 import shippingService from '../../services/shippingService'
-import ShippingRateForm from '../../components/shipping/ShippingRateForm'
 import { ROUTES } from '../../config/appConfig'
 
 const { Title } = Typography
@@ -29,8 +23,6 @@ const ShippingRatesPage: React.FC = () => {
   const navigate = useNavigate()
   const [shippingRates, setShippingRates] = useState<ShippingRate[]>([])
   const [loading, setLoading] = useState(false)
-  const [modalVisible, setModalVisible] = useState(false)
-  const [selectedRate, setSelectedRate] = useState<ShippingRate | undefined>()
   const [params, setParams] = useState<ShippingRateListParams>({
     page: 0,
     size: 10,
@@ -71,24 +63,6 @@ const ShippingRatesPage: React.FC = () => {
       fetchShippingRates()
     } catch (error) {
       message.error('Failed to delete shipping rate')
-    }
-  }
-
-  const handleSubmit = async (
-    values: ShippingRateCreateRequest | ShippingRateUpdateRequest
-  ) => {
-    try {
-      if (selectedRate) {
-        await shippingService.updateShippingRate(selectedRate.id, values)
-        message.success('Shipping rate updated successfully')
-      } else {
-        await shippingService.createShippingRate(values)
-        message.success('Shipping rate created successfully')
-      }
-      setModalVisible(false)
-      fetchShippingRates()
-    } catch (error) {
-      message.error('Failed to save shipping rate')
     }
   }
 

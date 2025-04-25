@@ -11,7 +11,6 @@ import {
   CountryUpdateRequest,
   StateCreateRequest,
   StateUpdateRequest,
-  FormSelectResponse,
 } from '../types/location'
 import { BaseService } from './baseService'
 

@@ -36,7 +36,6 @@ const ProductList: React.FC = () => {
   const navigate = useNavigate()
   const [products, setProducts] = useState<ProductListResponse[]>([])
   const [loading, setLoading] = useState(false)
-  const [totalPages, setTotalPages] = useState(0)
   const [totalElements, setTotalElements] = useState(0)
   const [params, setParams] = useState<ProductListParams>({
     page: 0,
@@ -55,7 +54,6 @@ const ProductList: React.FC = () => {
     try {
       const result = await productService.listByPage(params)
       setProducts(result.content)
-      setTotalPages(result.totalPages)
       setTotalElements(
         result.totalPages * (params.size || 10) || result.totalElements
       )
@@ -76,7 +74,6 @@ const ProductList: React.FC = () => {
 
   const handleTableChange = (
     pagination: any,
-    filters: any,
     sorter: SorterResult<ProductListResponse>
   ) => {
     const direction = sorter.order === 'ascend' ? 'asc' : 'desc'

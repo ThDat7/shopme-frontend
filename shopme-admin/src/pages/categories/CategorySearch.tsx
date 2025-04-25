@@ -135,7 +135,7 @@ const CategorySearch: React.FC = () => {
     }
   }
 
-  const handleTableChange = (pagination: any, filters: any, sorter: any) => {
+  const handleTableChange = (pagination: any, sorter: any) => {
     setPagination(pagination)
     if (sorter.field) {
       setSortField(sorter.field)
@@ -207,7 +207,7 @@ const CategorySearch: React.FC = () => {
     {
       title: 'Actions',
       key: 'actions',
-      render: (text: string, record: CategorySearchResponse) => (
+      render: (record: CategorySearchResponse) => (
         <Space>
           <Link to={`/categories/edit/${record.id}`}>
             <Button type='primary' icon={<EditOutlined />} size='small'>

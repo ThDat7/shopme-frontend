@@ -1,13 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import {
-  Form,
-  Input,
-  Select,
-  Button,
-  Space,
-  Typography,
-  InputNumber,
-} from 'antd'
+import { Form, Select, Button, Space, Typography } from 'antd'
 import type { SelectProps } from 'antd'
 import {
   CurrencySettings,

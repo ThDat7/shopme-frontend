@@ -13,13 +13,12 @@ import {
 import type { ColumnsType } from 'antd/es/table'
 import {
   StateListResponse,
-  StateDetailResponse,
   StateListParams,
-  FormSelectResponse,
   StateCreateRequest,
   StateUpdateRequest,
 } from '../../types/location'
 import locationService from '../../services/locationService'
+import { FormSelectOption } from '../../types/commonTypes'
 
 const { Search } = AntInput
 
@@ -30,7 +29,7 @@ interface Props {
 
 export const StateList: React.FC<Props> = ({ countryId, onSelect }) => {
   const [states, setStates] = useState<StateListResponse[]>([])
-  const [countries, setCountries] = useState<FormSelectResponse[]>([])
+  const [countries, setCountries] = useState<FormSelectOption[]>([])
   const [loading, setLoading] = useState(false)
   const [modalVisible, setModalVisible] = useState(false)
   const [form] = Form.useForm()
@@ -251,7 +250,7 @@ export const StateList: React.FC<Props> = ({ countryId, onSelect }) => {
               disabled={!!countryId}
             >
               {countries.map((country) => (
-                <Select.Option key={country.value} value={country.key}>
+                <Select.Option key={country.key} value={parseInt(country.key)}>
                   {country.value}
                 </Select.Option>
               ))}

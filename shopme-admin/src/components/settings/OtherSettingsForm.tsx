@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Form, Input, Button, Space, Typography } from 'antd'
 import { OtherSetting } from '../../types/settings'
 
@@ -14,26 +14,17 @@ export const OtherSettingsForm: React.FC<Props> = ({
   onSubmit,
 }) => {
   const [form] = Form.useForm()
-  const [settings, setSettings] = useState<OtherSetting[]>(initialData || [])
+  // const [settings, setSettings] = useState<OtherSetting[]>(initialData || [])
 
   const handleSubmit = (values: { settings: OtherSetting[] }) => {
     onSubmit(values.settings)
-  }
-
-  const handleAddSetting = () => {
-    setSettings([...settings, { key: '', value: '' }])
-  }
-
-  const handleRemoveSetting = (index: number) => {
-    const newSettings = settings.filter((_, i) => i !== index)
-    setSettings(newSettings)
   }
 
   return (
     <Form
       form={form}
       layout='vertical'
-      initialValues={{ settings }}
+      initialValues={{ settings: initialData }}
       onFinish={handleSubmit}
       style={{ maxWidth: 600 }}
     >

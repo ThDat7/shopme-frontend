@@ -208,7 +208,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
             beforeUpload={beforeUpload}
             onChange={handleImageChange}
             showUploadList={false}
-            customRequest={({ file, onSuccess }) => {
+            customRequest={({ onSuccess }) => {
               setTimeout(() => {
                 onSuccess?.('ok')
               }, 0)

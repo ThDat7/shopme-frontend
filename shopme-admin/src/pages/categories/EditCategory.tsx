@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { Card, Button, Typography, message } from 'antd'
+import { Card, Button, message } from 'antd'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { useNavigate, useParams } from 'react-router-dom'
 import CategoryForm from '../../components/categories/CategoryForm'
 import { categoryService } from '../../services/categoryService'
 import { CategoryDetailResponse } from '../../types/categoryTypes'
-
-const { Title } = Typography
 
 const EditCategory: React.FC = () => {
   const { id } = useParams<{ id: string }>()

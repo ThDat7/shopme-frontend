@@ -27,6 +27,7 @@ const CreateProduct: React.FC = () => {
     <Card>
       <Title level={2}>Create New Product</Title>
       <ProductForm
+        initialValues={null}
         onSubmit={handleSubmit}
         submitButtonText='Create Product'
         loading={loading}

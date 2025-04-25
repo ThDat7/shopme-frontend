@@ -31,10 +31,10 @@ const ProfilePage: React.FC = () => {
   const fetchProfile = async () => {
     try {
       const response = await authService.getProfile()
-      setProfile(response.result)
+      setProfile(response)
       form.setFieldsValue({
-        firstName: response.result.firstName,
-        lastName: response.result.lastName,
+        firstName: response.firstName,
+        lastName: response.lastName,
       })
     } catch (error) {
       console.error('Error fetching profile:', error)
