@@ -22,12 +22,7 @@ import {
   UploadOutlined,
 } from '@ant-design/icons'
 import { RcFile, UploadFile } from 'antd/es/upload'
-import {
-  ProductCreateRequest,
-  ProductDetailResponse,
-  ProductImage,
-  ProductSpecific,
-} from '../../types/productTypes'
+import { ProductDetailResponse, ProductImage } from '../../types/productTypes'
 import { brandService } from '../../services/brandService'
 import { FormSelectOption } from '../../types/commonTypes'
 import ReactQuill from 'react-quill-new'
@@ -38,7 +33,7 @@ const { TabPane } = Tabs
 const { Option } = Select
 
 interface ProductFormProps {
-  initialValues: any
+  initialValues: ProductDetailResponse | null
   onSubmit: (values: any) => Promise<void>
   submitButtonText: string
   loading?: boolean
@@ -56,50 +51,51 @@ const ProductForm: React.FC<ProductFormProps> = ({
   const [extraImageFileList, setExtraImageFileList] = useState<UploadFile[]>([])
   const [mainImageFileList, setMainImageFileList] = useState<UploadFile[]>([])
   const [mainImageUrl, setMainImageUrl] = useState<string>()
-
   const [selectedBrandId, setSelectedBrandId] = useState<number>()
   const limitImageSize = APP_CONFIG.IMAGE_UPLOAD.MAX_SIZE
 
   useEffect(() => {
-    fetchBrands()
+    const initializeForm = async () => {
+      await fetchBrands()
 
-    if (initialValues) {
-      // Set initial values for the form
-      form.setFieldsValue({
-        ...initialValues,
-        details: initialValues.details || [],
-      })
+      if (initialValues) {
+        const formValues = {
+          ...initialValues,
+          details: initialValues.details || [],
+        }
+        form.setFieldsValue(formValues)
 
-      // Set images
-      if (initialValues.mainImage) {
-        setMainImageFileList([
-          {
-            uid: '1',
-            name: initialValues.mainImage.split('/').pop() || '',
-            status: 'done',
-            url: initialValues.mainImage,
-          },
-        ])
-        setMainImageUrl(initialValues.mainImage)
-      }
+        if (initialValues.mainImage) {
+          setMainImageFileList([
+            {
+              uid: '1',
+              name: initialValues.mainImage.split('/').pop() || '',
+              status: 'done',
+              url: initialValues.mainImage,
+            },
+          ])
+          setMainImageUrl(initialValues.mainImage)
+        }
 
-      if (initialValues.images && initialValues.images.length > 0) {
-        setExtraImageFileList(
-          initialValues.images.map((image: ProductImage) => ({
-            uid: image.id.toString(),
-            name: image.url.split('/').pop() || '',
-            status: 'done',
-            url: image.url,
-          }))
-        )
-      }
+        if (initialValues.images?.length) {
+          setExtraImageFileList(
+            initialValues.images.map((image: ProductImage) => ({
+              uid: image.id.toString(),
+              name: image.url.split('/').pop() || '',
+              status: 'done',
+              url: image.url,
+            }))
+          )
+        }
 
-      // Set brand and fetch categories
-      if (initialValues.brandId) {
-        setSelectedBrandId(initialValues.brandId)
-        fetchCategoriesByBrand(initialValues.brandId)
+        if (initialValues.brandId) {
+          setSelectedBrandId(initialValues.brandId)
+          await fetchCategoriesByBrand(initialValues.brandId)
+        }
       }
     }
+
+    initializeForm()
   }, [initialValues, form])
 
   const fetchBrands = async () => {
@@ -108,6 +104,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
       setBrands(data)
     } catch (error) {
       console.error('Failed to fetch brands:', error)
+      message.error('Failed to load brands')
     }
   }
 
@@ -117,12 +114,13 @@ const ProductForm: React.FC<ProductFormProps> = ({
       setCategories(data)
     } catch (error) {
       console.error('Failed to fetch categories:', error)
+      message.error('Failed to load categories')
     }
   }
 
-  const handleBrandChange = (value: number) => {
+  const handleBrandChange = async (value: number) => {
     setSelectedBrandId(value)
-    fetchCategoriesByBrand(value)
+    await fetchCategoriesByBrand(value)
     form.setFieldsValue({ categoryId: undefined })
   }
 
@@ -133,40 +131,42 @@ const ProductForm: React.FC<ProductFormProps> = ({
       return false
     }
 
-    const isLtLimit = file.size < limitImageSize
-    if (!isLtLimit) {
+    const isWithinSizeLimit = file.size < limitImageSize
+    if (!isWithinSizeLimit) {
       message.error(
         `Image must be smaller than ${limitImageSize / (1024 * 1024)}MB!`
       )
       return false
     }
 
-    return false // Prevent automatic upload
+    return false
   }
 
-  const handleMainImageChange = async ({ fileList }: any) => {
+  const handleMainImageChange = ({ fileList }: { fileList: UploadFile[] }) => {
     setMainImageFileList(fileList)
-
-    if (fileList.length > 0 && fileList[0].originFileObj) {
-      const fileURL = URL.createObjectURL(fileList[0].originFileObj)
-      setMainImageUrl(fileURL)
+    if (fileList[0]?.originFileObj) {
+      setMainImageUrl(URL.createObjectURL(fileList[0].originFileObj))
     }
   }
 
-  const handleExtraImagesChange = ({ fileList }: any) => {
-    fileList.forEach((file: any) => {
-      if (file.originFileObj) {
-        const fileURL = URL.createObjectURL(file.originFileObj)
-        file.url = fileURL
-      }
-    })
-    setExtraImageFileList(fileList)
+  const handleExtraImagesChange = ({
+    fileList,
+  }: {
+    fileList: UploadFile[]
+  }) => {
+    const updatedFileList = fileList.map((file) => ({
+      ...file,
+      url: file.originFileObj
+        ? URL.createObjectURL(file.originFileObj)
+        : file.url,
+    }))
+    setExtraImageFileList(updatedFileList)
   }
 
   const handleFinish = async (values: any) => {
-    const mainImage = mainImageFileList?.[0].originFileObj as RcFile
+    const mainImage = mainImageFileList[0]?.originFileObj as RcFile | undefined
     const images = extraImageFileList
-      .map((file) => file.originFileObj as RcFile)
+      .map((file) => file.originFileObj as RcFile | undefined)
       .filter(Boolean)
     const remainingImageIds = extraImageFileList
       .filter((file) => file.status === 'done')
@@ -181,16 +181,16 @@ const ProductForm: React.FC<ProductFormProps> = ({
       details: values.details || [],
     }
 
-    await onSubmit(productData)
+    try {
+      await onSubmit(productData)
+    } catch (error) {
+      console.error('Failed to submit product:', error)
+      message.error('Failed to save product')
+    }
   }
 
   return (
-    <Form
-      form={form}
-      layout='vertical'
-      onFinish={handleFinish}
-      initialValues={initialValues}
-    >
+    <Form form={form} layout='vertical' onFinish={handleFinish}>
       <Tabs defaultActiveKey='general'>
         <TabPane tab='General' key='general'>
           <Row gutter={16}>

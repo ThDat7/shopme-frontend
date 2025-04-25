@@ -1,43 +1,54 @@
 import React from 'react'
-import { Badge } from 'antd'
-import { OrderStatus } from '../../types/orderTypes'
+import { Badge, Tag } from 'antd'
+import { OrderStatus, ORDER_STATUS_COLORS } from '../../types/orderTypes'
 
 interface OrderStatusBadgeProps {
   status: OrderStatus
+  showText?: boolean
+  size?: 'default' | 'small'
 }
 
-const OrderStatusBadge: React.FC<OrderStatusBadgeProps> = ({ status }) => {
-  const getStatusColor = (status: OrderStatus) => {
-    switch (status) {
-      case OrderStatus.NEW:
-        return 'blue'
-      case OrderStatus.PROCESSING:
-        return 'processing'
-      case OrderStatus.SHIPPED:
-        return 'cyan'
-      case OrderStatus.DELIVERED:
+const OrderStatusBadge: React.FC<OrderStatusBadgeProps> = ({
+  status,
+  showText = true,
+  size = 'default',
+}) => {
+  const color = ORDER_STATUS_COLORS[status] || 'default'
+
+  const getStatusText = (status: OrderStatus): string => {
+    return status.replace('_', ' ')
+  }
+
+  if (showText) {
+    return (
+      <Tag
+        color={color}
+        style={{ fontSize: size === 'small' ? '12px' : '14px' }}
+      >
+        {getStatusText(status)}
+      </Tag>
+    )
+  }
+
+  // Convert colors to status type for Badge
+  const getBadgeStatus = (color: string) => {
+    switch (color) {
+      case 'green':
         return 'success'
-      case OrderStatus.CANCELLED:
+      case 'red':
         return 'error'
-      case OrderStatus.REFUNDED:
+      case 'blue':
+        return 'processing'
+      case 'gold':
+      case 'orange':
+      case 'volcano':
         return 'warning'
-      case OrderStatus.RETURNED:
-        return 'default'
       default:
         return 'default'
     }
   }
 
-  const getStatusText = (status: OrderStatus) => {
-    return status.charAt(0) + status.slice(1).toLowerCase().replace('_', ' ')
-  }
-
-  return (
-    <Badge
-      status={getStatusColor(status) as any}
-      text={getStatusText(status)}
-    />
-  )
+  return <Badge status={getBadgeStatus(color)} text='' />
 }
 
 export default OrderStatusBadge

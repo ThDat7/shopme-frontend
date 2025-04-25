@@ -1,10 +1,11 @@
 import axios, { AxiosInstance } from 'axios'
-import { API_BASE_URL, APP_CONFIG } from '../config/appConfig'
+import { API_BASE_URL } from '../config/appConfig'
 import {
   ApiResponse,
   PaginationParams,
   PaginationResponse,
 } from '../types/commonTypes'
+import { toast } from 'react-toastify'
 
 export class BaseService {
   protected api: AxiosInstance
@@ -86,9 +87,11 @@ export class BaseService {
   }
 
   protected handleError(error: any): never {
+    let errorMessage = 'Đã xảy ra lỗi'
     if (error.response?.data?.message) {
-      throw new Error(error.response.data.message)
+      errorMessage = error.response.data.message
     }
-    throw new Error('An unexpected error occurred')
+    toast.error(errorMessage)
+    throw new Error(errorMessage)
   }
 }
