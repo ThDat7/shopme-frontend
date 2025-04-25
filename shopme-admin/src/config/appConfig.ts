@@ -1,17 +1,17 @@
-export const API_BASE_URL = 'http://localhost:8080/api/v1'
+export const API_BASE_URL = 'http://localhost:8081'
 
 export const API_ENDPOINTS = {
-  SETTINGS: '/settings',
-  PRODUCTS: '/products',
-  BRANDS: '/brands',
-  CATEGORIES: '/categories',
-  USERS: '/users',
-  AUTH: '/auth',
-  LOCATIONS: '/locations',
-  LOCATIONS_COUNTRIES: '/countries',
-  LOCATIONS_STATES: '/states',
-  SHIPPING_RATES: '/shipping-rates',
-  ORDERS: '/orders',
+  SETTINGS: '/api/v1/settings',
+  PRODUCTS: '/api/v1/products',
+  BRANDS: '/api/v1/brands',
+  CATEGORIES: '/api/v1/categories',
+  USERS: '/api/v1/users',
+  AUTH: '/api/auth',
+  LOCATIONS: '/api/v1/locations',
+  LOCATIONS_COUNTRIES: '/api/v1/countries',
+  LOCATIONS_STATES: '/api/v1/states',
+  SHIPPING_RATES: '/api/v1/shipping-rates',
+  ORDERS: '/api/v1/orders',
 }
 
 export const APP_CONFIG = {
@@ -29,8 +29,18 @@ export const APP_CONFIG = {
 
 export const ROUTES = {
   HOME: '/',
-
+  LOGIN: '/login',
+  PROFILE: '/profile',
+  REGISTER: '/register',
   PRODUCTS: '/products',
+  PRODUCT_DETAILS: '/products/:id',
+  ORDERS: '/orders',
+  ORDER_DETAILS: '/orders/:id',
+  CUSTOMERS: '/customers',
+  CUSTOMER_DETAILS: '/customers/:id',
+  SETTINGS: '/settings',
+  NOT_FOUND: '*',
+
   PRODUCTS_NEW: '/products/new',
   PRODUCTS_EDIT: '/products/edit/:id',
 
@@ -47,8 +57,6 @@ export const ROUTES = {
   USERS_NEW: '/users/new',
   USERS_EDIT: '/users/edit/:id',
 
-  SETTINGS: '/settings',
-
   LOCATIONS: '/locations',
   LOCATIONS_COUNTRIES: '/locations/countries',
   LOCATIONS_STATES: '/locations/states',
@@ -56,7 +64,4 @@ export const ROUTES = {
   SHIPPING_RATES: '/shipping-rates',
   SHIPPING_RATES_NEW: '/shipping-rates/new',
   SHIPPING_RATES_EDIT: '/shipping-rates/edit/:id',
-
-  ORDERS: '/orders',
-  ORDERS_DETAIL: '/orders/:id',
 }
