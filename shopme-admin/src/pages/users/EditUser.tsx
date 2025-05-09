@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { Card, Spin, message } from 'antd'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import UserForm from '../../components/user/UserForm'
 import { UserCreateRequest, UserDetailResponse } from '../../types/userTypes'
 import { userService } from '../../services/userService'
+import { useRoutes } from '../../hooks/useRoutes'
+import { ROUTES } from '../../config/appConfig'
 
 const EditUser: React.FC = () => {
-  const navigate = useNavigate()
+  const { navigateTo } = useRoutes()
   const { id } = useParams<{ id: string }>()
   const [user, setUser] = useState<UserDetailResponse>()
   const [loading, setLoading] = useState(true)
@@ -23,7 +25,7 @@ const EditUser: React.FC = () => {
     } catch (error) {
       console.error('Error fetching user:', error)
       message.error('Failed to fetch user')
-      navigate('/users')
+      navigateTo(ROUTES.USERS)
     } finally {
       setLoading(false)
     }
@@ -35,7 +37,7 @@ const EditUser: React.FC = () => {
       ...values,
       id: parseInt(id),
     })
-    navigate('/users')
+    navigateTo(ROUTES.USERS)
   }
 
   if (loading) {

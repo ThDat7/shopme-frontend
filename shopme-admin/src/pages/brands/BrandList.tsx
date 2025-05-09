@@ -19,13 +19,14 @@ import {
   DeleteOutlined,
   ExportOutlined,
 } from '@ant-design/icons'
-import { useNavigate } from 'react-router-dom'
 import type { MenuProps } from 'antd'
+import { useRoutes, createRoute } from '../../hooks/useRoutes'
+import { ROUTES } from '../../config/appConfig'
 
 const { Search } = Input
 
 const BrandList: React.FC = () => {
-  const navigate = useNavigate()
+  const { navigateTo } = useRoutes()
   const [brands, setBrands] = useState<BrandListResponse[]>([])
   const [totalPages, setTotalPages] = useState(0)
   const [loading, setLoading] = useState(false)
@@ -155,7 +156,7 @@ const BrandList: React.FC = () => {
           <Button
             type='primary'
             icon={<EditOutlined />}
-            onClick={() => navigate(`/brands/edit/${record.id}`)}
+            onClick={() => navigateTo(ROUTES.BRANDS_EDIT, { id: record.id })}
           >
             Edit
           </Button>
@@ -216,7 +217,7 @@ const BrandList: React.FC = () => {
         <Button
           type='primary'
           icon={<PlusOutlined />}
-          onClick={() => navigate('/brands/new')}
+          onClick={() => navigateTo(ROUTES.BRANDS_NEW)}
         >
           Add Brand
         </Button>

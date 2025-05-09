@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
 import {
   Form,
   Input,
@@ -25,6 +24,8 @@ import {
   findCategoryPath,
   renderCategoryOptions,
 } from '../../utils/categoryUtils'
+import { useRoutes } from '../../hooks/useRoutes'
+import { ROUTES } from '../../config/appConfig'
 
 interface CategoryFormProps {
   initialData?: CategoryDetailResponse
@@ -35,7 +36,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
   initialData,
   isEditMode = false,
 }) => {
-  const navigate = useNavigate()
+  const { navigateTo } = useRoutes()
   const [form] = Form.useForm<CategoryFormData>()
   const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [categories, setCategories] = useState<CategorySelectResponse[]>([])
@@ -129,7 +130,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
         )
         message.success('Category created successfully')
       }
-      navigate('/categories')
+      navigateTo(ROUTES.CATEGORIES)
     } catch (error) {
       message.error(`Failed to ${isEditMode ? 'update' : 'create'} category`)
     } finally {
@@ -250,7 +251,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
             <Button type='primary' htmlType='submit' icon={<SaveOutlined />}>
               {isEditMode ? 'Update' : 'Create'} Category
             </Button>
-            <Button onClick={() => navigate('/categories')}>Cancel</Button>
+            <Button onClick={() => navigateTo(ROUTES.CATEGORIES)}>Cancel</Button>
           </Space>
         </Form.Item>
       </Form>

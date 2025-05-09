@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import { Card, Typography, message, Spin } from 'antd'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import ShippingRateForm from '../../components/shipping/ShippingRateForm'
 import { ShippingRate, ShippingRateUpdateRequest } from '../../types/shipping'
 import shippingService from '../../services/shippingService'
 import { ROUTES } from '../../config/appConfig'
+import { useRoutes } from '../../hooks/useRoutes'
 
 const { Title } = Typography
 
 const EditShippingRatePage: React.FC = () => {
-  const navigate = useNavigate()
+  const { navigateTo } = useRoutes()
   const { id } = useParams<{ id: string }>()
   const [loading, setLoading] = useState(false)
   const [shippingRate, setShippingRate] = useState<ShippingRate>()
@@ -26,7 +27,7 @@ const EditShippingRatePage: React.FC = () => {
       setShippingRate(data)
     } catch (error) {
       message.error('Failed to fetch shipping rate')
-      navigate(ROUTES.SHIPPING_RATES)
+      navigateTo(ROUTES.SHIPPING_RATES)
     } finally {
       setLoading(false)
     }
@@ -37,14 +38,14 @@ const EditShippingRatePage: React.FC = () => {
     try {
       await shippingService.updateShippingRate(parseInt(id), values)
       message.success('Shipping rate updated successfully')
-      navigate(ROUTES.SHIPPING_RATES)
+      navigateTo(ROUTES.SHIPPING_RATES)
     } catch (error) {
       message.error('Failed to update shipping rate')
     }
   }
 
   const handleCancel = () => {
-    navigate(ROUTES.SHIPPING_RATES)
+    navigateTo(ROUTES.SHIPPING_RATES)
   }
 
   if (loading) {

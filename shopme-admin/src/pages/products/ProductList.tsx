@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import {
   Table,
   Button,
@@ -29,11 +28,13 @@ import {
 } from '../../types/productTypes'
 import { SorterResult } from 'antd/es/table/interface'
 import { ExportUtils } from '../../utils/exportUtils'
+import { useRoutes } from '../../hooks/useRoutes'
+import { ROUTES } from '../../config/appConfig'
 
 const { Title } = Typography
 
 const ProductList: React.FC = () => {
-  const navigate = useNavigate()
+  const { navigateTo } = useRoutes()
   const [products, setProducts] = useState<ProductListResponse[]>([])
   const [loading, setLoading] = useState(false)
   const [totalElements, setTotalElements] = useState(0)
@@ -194,7 +195,7 @@ const ProductList: React.FC = () => {
         <Space size='middle'>
           <Button
             icon={<EditOutlined />}
-            onClick={() => navigate(`/products/edit/${record.id}`)}
+            onClick={() => navigateTo(ROUTES.PRODUCTS_EDIT, { id: record.id })}
             type='primary'
             size='small'
           />
@@ -222,7 +223,7 @@ const ProductList: React.FC = () => {
             <Button
               type='primary'
               icon={<PlusOutlined />}
-              onClick={() => navigate('/products/create')}
+              onClick={() => navigateTo(ROUTES.PRODUCTS_NEW)}
             >
               Create New
             </Button>

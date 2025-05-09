@@ -10,17 +10,17 @@ import {
   Input,
 } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
-import { useNavigate } from 'react-router-dom'
 import type { ColumnsType } from 'antd/es/table'
 import { ShippingRate, ShippingRateListParams } from '../../types/shipping'
 import shippingService from '../../services/shippingService'
 import { ROUTES } from '../../config/appConfig'
+import { useRoutes, createRoute } from '../../hooks/useRoutes'
 
 const { Title } = Typography
 const { Search } = Input
 
 const ShippingRatesPage: React.FC = () => {
-  const navigate = useNavigate()
+  const { navigateTo } = useRoutes()
   const [shippingRates, setShippingRates] = useState<ShippingRate[]>([])
   const [loading, setLoading] = useState(false)
   const [params, setParams] = useState<ShippingRateListParams>({
@@ -49,11 +49,11 @@ const ShippingRatesPage: React.FC = () => {
   }, [params])
 
   const handleAdd = () => {
-    navigate(ROUTES.SHIPPING_RATES_NEW)
+    navigateTo(ROUTES.SHIPPING_RATES_NEW)
   }
 
   const handleEdit = (record: ShippingRate) => {
-    navigate(ROUTES.SHIPPING_RATES_EDIT.replace(':id', record.id.toString()))
+    navigateTo(ROUTES.SHIPPING_RATES_EDIT, { id: record.id })
   }
 
   const handleDelete = async (id: number) => {

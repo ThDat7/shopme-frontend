@@ -16,18 +16,19 @@ import {
   Statistic,
 } from 'antd'
 import { ArrowLeftOutlined, ShoppingOutlined, UserOutlined } from '@ant-design/icons'
-import { useNavigate, useParams, Link } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
 import orderService from '../../services/orderService'
 import { OrderDetail, OrderSpecific } from '../../types/orderTypes'
 import { ROUTES } from '../../config/appConfig'
 import dayjs from 'dayjs'
 import OrderStatusBadge from '../../components/order/OrderStatusBadge'
+import { useRoutes } from '../../hooks/useRoutes'
 
 const { Title, Text } = Typography
 
 const OrderDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>()
-  const navigate = useNavigate()
+  const { navigateTo } = useRoutes()
   
   const [loading, setLoading] = useState(true)
   const [order, setOrder] = useState<OrderDetail | null>(null)
@@ -45,7 +46,7 @@ const OrderDetailPage: React.FC = () => {
       setOrder(data)
     } catch (error) {
       message.error('Failed to fetch order details')
-      navigate(ROUTES.ORDERS)
+      navigateTo(ROUTES.ORDERS)
     } finally {
       setLoading(false)
     }
@@ -57,14 +58,14 @@ const OrderDetailPage: React.FC = () => {
     try {
       await orderService.deleteOrder(parseInt(id))
       message.success('Order deleted successfully')
-      navigate(ROUTES.ORDERS)
+      navigateTo(ROUTES.ORDERS)
     } catch (error) {
       message.error('Failed to delete order')
     }
   }
 
   const handleGoBack = () => {
-    navigate(ROUTES.ORDERS)
+    navigateTo(ROUTES.ORDERS)
   }
 
   const columns = [

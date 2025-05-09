@@ -1,13 +1,14 @@
 import React from 'react'
 import { Result, Button } from 'antd'
-import { useNavigate } from 'react-router-dom'
 import { HomeOutlined, LockOutlined } from '@ant-design/icons'
+import { useRoutes } from '../../hooks/useRoutes'
+import { ROUTES } from '../../config/appConfig'
 
 /**
  * Page displayed when a user tries to access a resource they don't have permission for
  */
 const UnauthorizedPage: React.FC = () => {
-  const navigate = useNavigate()
+  const { navigateTo, navigate } = useRoutes()
 
   return (
     <div className='h-screen flex items-center justify-center p-4'>
@@ -24,7 +25,7 @@ const UnauthorizedPage: React.FC = () => {
             type='primary'
             key='home'
             icon={<HomeOutlined />}
-            onClick={() => navigate('/')}
+            onClick={() => navigateTo(ROUTES.HOME)}
           >
             Về trang chủ
           </Button>,

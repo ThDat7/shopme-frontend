@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { Card, Typography, Spin } from 'antd'
 import ProductForm from '../../components/product/ProductForm'
 import {
@@ -7,12 +7,14 @@ import {
   ProductUpdateRequest,
 } from '../../types/productTypes'
 import { productService } from '../../services/productService'
+import { useRoutes } from '../../hooks/useRoutes'
+import { ROUTES } from '../../config/appConfig'
 
 const { Title } = Typography
 
 const EditProduct: React.FC = () => {
   const { id } = useParams<{ id: string }>()
-  const navigate = useNavigate()
+  const { navigateTo } = useRoutes()
   const [loading, setLoading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [product, setProduct] = useState<ProductDetailResponse | null>(null)
@@ -41,7 +43,7 @@ const EditProduct: React.FC = () => {
     setSubmitting(true)
     try {
       await productService.updateProduct(parseInt(id), values)
-      navigate('/products')
+      navigateTo(ROUTES.PRODUCTS)
     } catch (error) {
       console.error('Failed to update product:', error)
     } finally {

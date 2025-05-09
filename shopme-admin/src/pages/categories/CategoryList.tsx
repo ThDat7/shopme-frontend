@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import '@ant-design/v5-patch-for-react-19'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import {
   Table,
   Card,
@@ -27,6 +27,8 @@ import {
   CategoryListResponse,
   CategoryListParams,
 } from '../../types/categoryTypes'
+import { ROUTES } from '../../config/appConfig'
+import { useRoutes, createRoute } from '../../hooks/useRoutes'
 
 const { Search } = Input
 const { Title } = Typography
@@ -48,7 +50,7 @@ const CategoryList: React.FC = () => {
   const [sortField, setSortField] = useState('name')
   const [sortOrder, setSortOrder] = useState<'ascend' | 'descend'>('ascend')
 
-  const navigate = useNavigate()
+  const { navigateTo } = useRoutes()
 
   useEffect(() => {
     fetchCategories()
@@ -242,7 +244,7 @@ const CategoryList: React.FC = () => {
       key: 'actions',
       render: (record: CategoryListResponse) => (
         <Space>
-          <Link to={`/categories/edit/${record.id}`}>
+          <Link to={createRoute(ROUTES.CATEGORIES_EDIT, { id: record.id })}>
             <Button type='primary' icon={<EditOutlined />} size='small'>
               Edit
             </Button>
@@ -279,7 +281,7 @@ const CategoryList: React.FC = () => {
         >
           <Title level={4}>Categories</Title>
           <Space>
-            <Link to='/categories/new'>
+            <Link to={ROUTES.CATEGORIES_NEW}>
               <Button type='primary' icon={<PlusOutlined />}>
                 New Category
               </Button>
@@ -314,7 +316,7 @@ const CategoryList: React.FC = () => {
         <Search
           placeholder='Search categories...'
           onSearch={(value) =>
-            navigate(`/categories/search?keyword=${encodeURIComponent(value)}`)
+            navigateTo(ROUTES.CATEGORIES_SEARCH, {}, { keyword: value })
           }
           style={{ maxWidth: 400 }}
         />

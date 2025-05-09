@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import { Card, Button, message } from 'antd'
 import { ArrowLeftOutlined } from '@ant-design/icons'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import CategoryForm from '../../components/categories/CategoryForm'
 import { categoryService } from '../../services/categoryService'
 import { CategoryDetailResponse } from '../../types/categoryTypes'
+import { useRoutes } from '../../hooks/useRoutes'
+import { ROUTES } from '../../config/appConfig'
 
 const EditCategory: React.FC = () => {
   const { id } = useParams<{ id: string }>()
-  const navigate = useNavigate()
+  const { navigateTo } = useRoutes()
   const [category, setCategory] = useState<CategoryDetailResponse | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -21,7 +23,7 @@ const EditCategory: React.FC = () => {
         }
       } catch (error) {
         message.error('Failed to load category details')
-        navigate('/categories')
+        navigateTo(ROUTES.CATEGORIES)
       } finally {
         setLoading(false)
       }
@@ -42,7 +44,7 @@ const EditCategory: React.FC = () => {
     <Card
       title='Edit Category'
       extra={
-        <Button type='link' onClick={() => navigate('/categories')}>
+        <Button type='link' onClick={() => navigateTo(ROUTES.CATEGORIES)}>
           <ArrowLeftOutlined /> Back to Categories
         </Button>
       }

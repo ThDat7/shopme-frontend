@@ -1,28 +1,28 @@
 import React from 'react'
 import { Card, Typography, message } from 'antd'
-import { useNavigate } from 'react-router-dom'
 import ShippingRateForm from '../../components/shipping/ShippingRateForm'
 import { ShippingRateCreateRequest } from '../../types/shipping'
 import shippingService from '../../services/shippingService'
 import { ROUTES } from '../../config/appConfig'
+import { useRoutes } from '../../hooks/useRoutes'
 
 const { Title } = Typography
 
 const CreateShippingRatePage: React.FC = () => {
-  const navigate = useNavigate()
+  const { navigateTo } = useRoutes()
 
   const handleSubmit = async (values: ShippingRateCreateRequest) => {
     try {
       await shippingService.createShippingRate(values)
       message.success('Shipping rate created successfully')
-      navigate(ROUTES.SHIPPING_RATES)
+      navigateTo(ROUTES.SHIPPING_RATES)
     } catch (error) {
       message.error('Failed to create shipping rate')
     }
   }
 
   const handleCancel = () => {
-    navigate(ROUTES.SHIPPING_RATES)
+    navigateTo(ROUTES.SHIPPING_RATES)
   }
 
   return (

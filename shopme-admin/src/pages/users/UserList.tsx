@@ -22,13 +22,14 @@ import {
   DownloadOutlined,
   ExportOutlined,
 } from '@ant-design/icons'
-import { useNavigate } from 'react-router-dom'
 import type { MenuProps } from 'antd'
+import { ROUTES } from '../../config/appConfig'
+import { useRoutes } from '../../hooks/useRoutes'
 
 const { Search } = Input
 
 const UserList: React.FC = () => {
-  const navigate = useNavigate()
+  const { navigateTo } = useRoutes()
   const [users, setUsers] = useState<UserListResponse[]>([])
   const [totalPages, setTotalPages] = useState(0)
   const [loading, setLoading] = useState(false)
@@ -192,7 +193,7 @@ const UserList: React.FC = () => {
           <Button
             type='primary'
             icon={<EditOutlined />}
-            onClick={() => navigate(`/users/edit/${record.id}`)}
+            onClick={() => navigateTo(ROUTES.USERS_EDIT, { id: record.id })}
           >
             Edit
           </Button>
@@ -252,7 +253,7 @@ const UserList: React.FC = () => {
         <Button
           type='primary'
           icon={<PlusOutlined />}
-          onClick={() => navigate('/users/create')}
+          onClick={() => navigateTo(ROUTES.USERS_NEW)}
         >
           Add User
         </Button>

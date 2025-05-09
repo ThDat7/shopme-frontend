@@ -9,7 +9,7 @@ import {
   Typography,
   MenuProps,
 } from 'antd'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import {
   UserOutlined,
   AppstoreOutlined,
@@ -21,6 +21,8 @@ import {
   RocketOutlined,
 } from '@ant-design/icons'
 import { useAuth } from '../../contexts/AuthContext'
+import { ROUTES } from '../../config/appConfig'
+import { useRoutes } from '../../hooks/useRoutes'
 
 const { Header: AntHeader } = Layout
 const { Text } = Typography
@@ -28,16 +30,16 @@ const { Text } = Typography
 const Header: React.FC = () => {
   const location = useLocation()
   const currentPath = location.pathname
+  const { navigateTo } = useRoutes()
 
   const { logout, userInfo } = useAuth()
-  const navigate = useNavigate()
 
   const userMenuItems: MenuProps['items'] = [
     {
       key: 'profile',
       icon: <UserOutlined />,
       label: 'My Profile',
-      onClick: () => navigate('/profile'),
+      onClick: () => navigateTo(ROUTES.PROFILE),
     },
     {
       key: 'logout',
@@ -51,52 +53,52 @@ const Header: React.FC = () => {
     {
       key: 'dashboard',
       icon: <DashboardOutlined />,
-      label: <Link to='/'>Dashboard</Link>,
+      label: <Link to={ROUTES.HOME}>Dashboard</Link>,
     },
     {
       key: 'users',
       icon: <UserOutlined />,
-      label: <Link to='/users'>Users</Link>,
+      label: <Link to={ROUTES.USERS}>Users</Link>,
     },
     {
       key: 'categories',
       icon: <AppstoreOutlined />,
-      label: <Link to='/categories'>Categories</Link>,
+      label: <Link to={ROUTES.CATEGORIES}>Categories</Link>,
     },
     {
       key: 'brands',
       icon: <AppstoreOutlined />,
-      label: <Link to='/brands'>Brands</Link>,
+      label: <Link to={ROUTES.BRANDS}>Brands</Link>,
     },
     {
       key: 'products',
       icon: <ShoppingOutlined />,
-      label: <Link to='/products'>Products</Link>,
+      label: <Link to={ROUTES.PRODUCTS}>Products</Link>,
     },
     {
       key: 'settings',
       icon: <SettingOutlined />,
-      label: <Link to='/settings'>Settings</Link>,
+      label: <Link to={ROUTES.SETTINGS}>Settings</Link>,
     },
     {
       key: 'locations',
       icon: <GlobalOutlined />,
-      label: <Link to='/locations'>Locations</Link>,
+      label: <Link to={ROUTES.LOCATIONS}>Locations</Link>,
     },
     {
       key: 'shippings',
       icon: <RocketOutlined />,
-      label: <Link to='/shipping-rates'>Shipping Rates</Link>,
+      label: <Link to={ROUTES.SHIPPING_RATES}>Shipping Rates</Link>,
     },
   ]
 
   const getSelectedKey = () => {
-    if (currentPath.includes('/users')) return 'users'
-    if (currentPath.includes('/categories')) return 'categories'
-    if (currentPath.includes('/brands')) return 'brands'
-    if (currentPath.includes('/products')) return 'products'
-    if (currentPath.includes('/settings')) return 'settings'
-    if (currentPath.includes('/locations')) return 'locations'
+    if (currentPath.includes(ROUTES.USERS)) return 'users'
+    if (currentPath.includes(ROUTES.CATEGORIES)) return 'categories'
+    if (currentPath.includes(ROUTES.BRANDS)) return 'brands'
+    if (currentPath.includes(ROUTES.PRODUCTS)) return 'products'
+    if (currentPath.includes(ROUTES.SETTINGS)) return 'settings'
+    if (currentPath.includes(ROUTES.LOCATIONS)) return 'locations'
     return 'dashboard'
   }
 

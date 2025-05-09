@@ -14,7 +14,6 @@ import {
   Col,
 } from 'antd'
 import { SearchOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons'
-import { useNavigate } from 'react-router-dom'
 import type { ColumnsType } from 'antd/es/table'
 import orderService from '../../services/orderService'
 import OrderStatusBadge from '../../components/order/OrderStatusBadge'
@@ -25,12 +24,13 @@ import {
 } from '../../types/orderTypes'
 import { ROUTES } from '../../config/appConfig'
 import dayjs from 'dayjs'
+import { useRoutes } from '../../hooks/useRoutes'
 
 const { Title } = Typography
 const { RangePicker } = DatePicker
 
 const OrdersPage: React.FC = () => {
-  const navigate = useNavigate()
+  const { navigateTo } = useRoutes()
   const [loading, setLoading] = useState(false)
   const [orders, setOrders] = useState<OrderListItem[]>([])
   const [total, setTotal] = useState(0)
@@ -69,7 +69,7 @@ const OrdersPage: React.FC = () => {
   }
 
   const handleViewDetail = (id: number) => {
-    navigate(ROUTES.ORDERS_DETAIL.replace(':id', id.toString()))
+    navigateTo(ROUTES.ORDERS_DETAIL, { id: id })
   }
 
   const handleTableChange = (pagination: any, filters: any, sorter: any) => {

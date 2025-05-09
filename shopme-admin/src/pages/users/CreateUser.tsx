@@ -1,16 +1,17 @@
 import React from 'react'
 import { Card } from 'antd'
-import { useNavigate } from 'react-router-dom'
 import UserForm from '../../components/user/UserForm'
 import { UserCreateRequest } from '../../types/userTypes'
 import { userService } from '../../services/userService'
+import { useRoutes } from '../../hooks/useRoutes'
+import { ROUTES } from '../../config/appConfig'
 
 const CreateUser: React.FC = () => {
-  const navigate = useNavigate()
+  const { navigateTo } = useRoutes()
 
   const handleSubmit = async (values: UserCreateRequest) => {
     await userService.createUser(values)
-    navigate('/users')
+    navigateTo(ROUTES.USERS)
   }
 
   return (

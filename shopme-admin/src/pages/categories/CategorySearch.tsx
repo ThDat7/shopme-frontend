@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import '@ant-design/v5-patch-for-react-19'
-import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import {
   Table,
   Card,
@@ -25,6 +25,8 @@ import {
   CategorySearchResponse,
   CategoryListParams,
 } from '../../types/categoryTypes'
+import { ROUTES } from '../../config/appConfig'
+import { useRoutes, createRoute } from '../../hooks/useRoutes'
 
 const { Search } = Input
 const { Title } = Typography
@@ -41,7 +43,7 @@ const CategorySearch: React.FC = () => {
   })
   const [loading, setLoading] = useState(false)
 
-  const navigate = useNavigate()
+  const { navigateTo } = useRoutes()
   const location = useLocation()
 
   useEffect(() => {
@@ -80,7 +82,7 @@ const CategorySearch: React.FC = () => {
 
   const handleSearch = () => {
     if (keyword.trim()) {
-      navigate(`/categories/search?keyword=${encodeURIComponent(keyword)}`)
+      navigateTo(ROUTES.CATEGORIES_SEARCH, {}, { keyword })
       searchCategories(keyword)
     }
   }
@@ -209,7 +211,7 @@ const CategorySearch: React.FC = () => {
       key: 'actions',
       render: (record: CategorySearchResponse) => (
         <Space>
-          <Link to={`/categories/edit/${record.id}`}>
+          <Link to={createRoute(ROUTES.CATEGORIES_EDIT, { id: record.id })}>
             <Button type='primary' icon={<EditOutlined />} size='small'>
               Edit
             </Button>
@@ -248,11 +250,11 @@ const CategorySearch: React.FC = () => {
           <Space>
             <Button
               icon={<ArrowLeftOutlined />}
-              onClick={() => navigate('/categories')}
+              onClick={() => navigateTo(ROUTES.CATEGORIES)}
             >
               Back to Categories
             </Button>
-            <Link to='/categories/new'>
+            <Link to={ROUTES.CATEGORIES_NEW}>
               <Button type='primary' icon={<PlusOutlined />}>
                 New Category
               </Button>
