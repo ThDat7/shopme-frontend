@@ -22,7 +22,7 @@ import {
 } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import { ROUTES } from '../../config/appConfig'
-import { createRoute } from '../../hooks/useRoutes'
+import { createRoute, useRoutes } from '../../hooks/useRoutes'
 import {
   ProductListResponse,
   ProductFilterType,
@@ -38,6 +38,8 @@ import carouselService from '../../services/carouselService'
 import { CarouselImageResponse } from '../../types/carouselTypes'
 import { useCart } from '../../contexts/CartContext'
 import { message } from 'antd'
+import { CategoryResponse } from '../../types/categoryTypes'
+import categoryService from '../../services/categoryService'
 
 const { Title, Paragraph } = Typography
 
@@ -64,6 +66,8 @@ const HomePage: React.FC = () => {
   const discountedRef = useRef<HTMLDivElement>(null)
 
   const navigate = useNavigate()
+  const { navigateTo } = useRoutes()
+
   const { addToCart } = useCart()
 
   const handleAddToCart = async (product: ProductListResponse) => {
@@ -287,54 +291,72 @@ const HomePage: React.FC = () => {
     )
   }
 
-  const renderCategories = () => (
-    <div className='mb-12'>
-      <Title level={3} style={{ marginBottom: 24 }}>
-        Danh mục nổi bật
-      </Title>
-      <Row gutter={[16, 16]}>
-        {categories.map((category) => (
-          <Col key={category.id} xs={12} sm={8} md={6} lg={4}>
-            <Card
-              hoverable
-              style={{ textAlign: 'center' }}
-              cover={
-                <div style={{ padding: '20px 0 10px' }}>
-                  <img
-                    alt={category.name}
-                    src={category.image}
-                    style={{
-                      width: '80px',
-                      height: '80px',
-                      objectFit: 'contain',
-                      margin: '0 auto',
-                    }}
-                  />
-                </div>
-              }
-              bodyStyle={{ padding: '10px' }}
-              onClick={() =>
-                navigate(
-                  createRoute(ROUTES.CATEGORY_DETAIL, {
-                    categorySlug: category.alias,
-                  })
-                )
-              }
-            >
-              <Typography.Paragraph
-                style={{ margin: 0, fontSize: 14, fontWeight: 500 }}
+  const renderCategories = () => {
+    const [categories, setCategories] = useState<CategoryResponse[]>([])
+    useEffect(() => {
+      const fetchCategories = async () => {
+        try {
+          const response = await categoryService.getRootCategories({
+            page: 0,
+            size: 10,
+          })
+          setCategories(response.content)
+        } catch (error) {
+          console.error('Error fetching categories:', error)
+        }
+      }
+      fetchCategories()
+    }, [])
+
+    return (
+      <div className='mb-12'>
+        <Title level={3} style={{ marginBottom: 24 }}>
+          Danh mục nổi bật
+        </Title>
+        <Row gutter={[16, 16]}>
+          {categories.map((category) => (
+            <Col key={category.id} xs={12} sm={8} md={6} lg={4}>
+              <Card
+                hoverable
+                style={{ textAlign: 'center' }}
+                cover={
+                  <div style={{ padding: '20px 0 10px' }}>
+                    <img
+                      alt={category.name}
+                      src={category.image}
+                      style={{
+                        width: '80px',
+                        height: '80px',
+                        objectFit: 'contain',
+                        margin: '0 auto',
+                      }}
+                    />
+                  </div>
+                }
+                bodyStyle={{ padding: '10px' }}
+                onClick={() =>
+                  navigateTo(
+                    ROUTES.PRODUCTS,
+                    {},
+                    { categoryIds: [category.id] }
+                  )
+                }
               >
-                {category.name}
-              </Typography.Paragraph>
-              <Typography.Text type='secondary' style={{ fontSize: 12 }}>
-                {category.productCount} sản phẩm
-              </Typography.Text>
-            </Card>
-          </Col>
-        ))}
-      </Row>
-    </div>
-  )
+                <Typography.Paragraph
+                  style={{ margin: 0, fontSize: 14, fontWeight: 500 }}
+                >
+                  {category.name}
+                </Typography.Paragraph>
+                <Typography.Text type='secondary' style={{ fontSize: 12 }}>
+                  {category.productCount} sản phẩm
+                </Typography.Text>
+              </Card>
+            </Col>
+          ))}
+        </Row>
+      </div>
+    )
+  }
 
   const renderPromoBanners = () => (
     <div className='mb-12'>

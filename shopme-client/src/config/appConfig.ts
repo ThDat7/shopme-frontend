@@ -1,4 +1,4 @@
-export const API_BASE_URL = 'http://localhost'
+export const API_BASE_URL = 'http://localhost:8080'
 
 export const API_ENDPOINTS = {
   PRODUCTS: '/api/v1/products',
@@ -35,7 +35,7 @@ export const APP_CONFIG = {
 } as const
 
 // Các đường dẫn frontend - việt hóa
-export const ROUTES = {
+export const VIETNAMESE_ROUTES = {
   // Trang chủ
   HOME: '/',
 
@@ -118,8 +118,20 @@ export const ENGLISH_ROUTES = {
   CUSTOMER_INFO: '/customer-info',
   PROFILE: '/profile',
   FORGOT_PASSWORD: '/forgot-password',
-  NEWS: '/news',
-  SUPPORT: '/supports',
+  RESET_PASSWORD: '/reset-password',
+
   PROMOTIONS: '/promotions',
   PROMOTION_DETAIL: '/promotions/:promotionSlug',
+
+  ABOUT: '/about',
+  NEWS: '/news',
+  SUPPORT: '/supports',
+  SUPPORT_GUIDE: '/support-guide',
+  SUPPORT_RETURN_POLICY: '/support-return-policy',
+  SUPPORT_WARRANTY: '/support-warranty',
+  SUPPORT_CONTACT: '/support-contact',
+  SUPPORT_FAQ: '/support-faq',
+  WISHLIST: '/wishlist',
 }
+
+export const ROUTES = ENGLISH_ROUTES
